@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Wordlane Tech Employee Management System - View and manage reports.">
+    <meta name="keywords" content="Employee Management, HR, Reports, Analytics, Wordlane Tech">
+    <meta name="author" content="Wordlane Tech">
+    <title>Wordlane Tech - Reports</title>
+
+    <!-- Google Fonts: Roboto for professional typography -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" xintegrity="sha512-Fo3rlrZj/k7ujTnHg4CGR2D7kSs0V4LLanw2qksYuRlEzO+tcaEPQogQ0KaoGN26/zrn20ImR1DfuLWnOo7aBA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <style>
+        /* Base font application */
+        body {
+            font-family: 'Roboto', sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        /* Custom gradient for header */
+        .header-gradient {
+            background: linear-gradient(to right, #87CEEB, #ADD8E6); /* Light sky blue to slightly lighter */
+        }
+
+        /* Profile dropdown styling */
+        .profile-dropdown {
+            position: absolute;
+            top: calc(100% + 10px); /* Position below the icon, with some spacing */
+            right: 0;
+            background-color: white;
+            border-radius: 0.75rem; /* rounded-xl */
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); /* shadow-lg */
+            z-index: 20; /* Above other content */
+            min-width: 150px;
+            overflow: hidden; /* Ensures rounded corners apply to children */
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: opacity 0.2s ease-out, transform 0.2s ease-out, visibility 0.2s ease-out;
+        }
+        .profile-dropdown.show {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+        .profile-dropdown a {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1rem; /* p-3 px-4 */
+            color: #4B5563; /* text-gray-700 */
+            font-weight: 500; /* font-medium */
+            transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out;
+        }
+        .profile-dropdown a:hover {
+            background-color: #F3F4F6; /* bg-gray-100 */
+            color: #1F2937; /* text-gray-900 */
+        }
+        .profile-dropdown a i {
+            margin-right: 0.75rem; /* mr-3 */
+            font-size: 1.125rem; /* text-lg */
+        }
+
+        /* Responsive adjustments for smaller screens */
+        @media (max-width: 768px) {
+            .header-gradient {
+                padding: 1rem; /* Adjust padding for smaller screens */
+            }
+            .header-gradient h1 {
+                font-size: 1.75rem; /* Smaller font for company name */
+            }
+            .header-gradient img {
+                width: 35px;
+                height: 35px;
+            }
+            .nav-list {
+                flex-direction: column; /* Stack nav items vertically */
+                align-items: center;
+                space-x: 0; /* Remove horizontal spacing */
+            }
+            .nav-list li {
+                margin-bottom: 0.75rem; /* Add vertical spacing */
+            }
+            .nav-list li:last-child {
+                margin-bottom: 0;
+            }
+            .page-title {
+                font-size: 2.5rem; /* Adjust title size */
+            }
+            .profile-dropdown {
+                right: 1rem; /* Adjust position for mobile */
+                min-width: unset; /* Allow width to adjust */
+                width: calc(100% - 2rem); /* Take full width minus padding */
+            }
+        }
+
+        /* Card specific styles for better readability and spacing */
+        .report-card {
+            border-radius: 0.75rem; /* rounded-xl */
+            padding: 1.5rem; /* p-6 */
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); /* shadow-md */
+            transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+        }
+        .report-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        .report-card h3 {
+            font-size: 1.5rem; /* text-2xl */
+            font-weight: 700; /* font-bold */
+            margin-bottom: 0.5rem; /* mb-2 */
+        }
+        .report-card p {
+            font-size: 0.95rem; /* text-md */
+            color: rgba(0, 0, 0, 0.7); /* darker text for readability */
+            margin-bottom: 0.5rem;
+        }
+        .report-card .type-badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px; /* full rounded */
+            font-size: 0.75rem; /* text-xs */
+            font-weight: 600; /* font-semibold */
+            margin-top: 0.75rem;
+        }
+        /* Specific type colors (example) */
+        .type-financial {
+            background-color: #BFDBFE; /* blue-200 */
+            color: #1E40AF; /* blue-800 */
+        }
+        .type-performance {
+            background-color: #D1FAE5; /* green-200 */
+            color: #065F46; /* green-800 */
+        }
+        .type-attendance {
+            background-color: #FEE2E2; /* red-200 */
+            color: #991B1B; /* red-800 */
+        }
+        .type-project {
+            background-color: #FFEDD5; /* orange-200 */
+            color: #9A3412; /* orange-800 */
+        }
+        .type-leave {
+            background-color: #E0E7FF; /* indigo-200 */
+            color: #3730A3; /* indigo-800 */
+        }
+        .type-custom {
+            background-color: #F3E8FF; /* purple-200 */
+            color: #581C87; /* purple-800 */
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen flex flex-col">
+
+    <!-- Header Section -->
+    <header class="header-gradient p-5 shadow-lg rounded-b-xl flex flex-col sm:flex-row items-center justify-between sticky top-0 z-10">
+        <!-- Left side: Logo and Company Name (clickable to dashboard) -->
+        <a href="dashboard.html" class="flex items-center mb-4 sm:mb-0 text-gray-800 no-underline hover:opacity-80 transition duration-200">
+            <!-- Company Logo -->
+            <img src="http://googleusercontent.com/file_content/3" alt="Wordlane Tech Logo" class="mr-4 w-16 h-16 object-contain">
+            <h1 class="text-3xl font-bold tracking-wide">Wordlane Tech</h1>
+        </a>
+
+        <!-- Right side: Profile icon with dropdown -->
+        <div class="relative">
+            <button id="profileButton" class="bg-gray-700 hover:bg-gray-900 text-white w-12 h-12 rounded-full flex items-center justify-center shadow-lg transition duration-300 ease-in-out transform hover:scale-110 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-opacity-50" aria-label="User Profile Menu">
+                <!-- Profile picture placeholder -->
+                <img src="https://placehold.co/48x48/CCCCCC/FFFFFF?text=JP" alt="User Profile" class="w-full h-full rounded-full object-cover">
+            </button>
+
+            <!-- Profile Dropdown Menu -->
+            <div id="profileDropdown" class="profile-dropdown">
+                <a href="profile.html" class="flex items-center">
+                    <i class="fas fa-user mr-3" aria-hidden="true"></i>
+                    Details
+                </a>
+                <a href="../../login.html" class="flex items-center">
+                    <i class="fas fa-sign-out-alt mr-3" aria-hidden="true"></i>
+                    Log Out
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Navigation Bar for Employee Management System -->
+    <nav class="bg-gray-800 p-4 shadow-md">
+        <ul class="flex flex-wrap justify-center space-x-4 sm:space-x-10 nav-list">
+            <li><a href="dashboard.html" class="text-white text-lg font-medium hover:text-sky-300 transition duration-300 ease-in-out p-2 rounded-md hover:bg-gray-700">Dashboard</a></li>
+            <li><a href="employees.html" class="text-white text-lg font-medium hover:text-sky-300 transition duration-300 ease-in-out p-2 rounded-md hover:bg-gray-700">Employees</a></li>
+            <li><a href="departments.html" class="text-white text-lg font-medium hover:text-sky-300 transition duration-300 ease-in-out p-2 rounded-md hover:bg-gray-700">Departments</a></li>
+            <li><a href="attendance.html" class="text-white text-lg font-medium hover:text-sky-300 transition duration-300 ease-in-out p-2 rounded-md hover:bg-gray-700">Attendance</a></li>
+            <li><a href="projects.html" class="text-white text-lg font-medium hover:text-sky-300 transition duration-300 ease-in-out p-2 rounded-md hover:bg-gray-700">Projects</a></li>
+            <li><a href="tasks.html" class="text-white text-lg font-medium hover:text-sky-300 transition duration-300 ease-in-out p-2 rounded-md hover:bg-gray-700">Tasks</a></li>
+            <li><a href="leaves.html" class="text-white text-lg font-medium hover:text-sky-300 transition duration-300 ease-in-out p-2 rounded-md hover:bg-gray-700">Leaves</a></li>
+            <li><a href="documents.html" class="text-white text-lg font-medium hover:text-sky-300 transition duration-300 ease-in-out p-2 rounded-md hover:bg-gray-700">Documents</a></li>
+            <li><a href="reports.html" class="text-sky-300 text-lg font-medium transition duration-300 ease-in-out p-2 rounded-md bg-gray-700">Reports</a></li>
+        </ul>
+    </nav>
+
+    <!-- Main Content Area - Report List (Cards) -->
+    <main class="flex-grow p-8 bg-gray-50">
+        <div class="max-w-7xl mx-auto">
+            <div class="flex justify-between items-center mb-8">
+                <h2 class="text-3xl font-extrabold text-gray-900 page-title">Reports</h2>
+                <a href="generate_report.html" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg shadow-md transition duration-300 ease-in-out flex items-center">
+                    <i class="fas fa-file-alt mr-2"></i> Generate New Report
+                </a>
+            </div>
+
+            <!-- Report Cards Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Example Report Card 1 (Financial) -->
+                <div class="report-card bg-blue-100 border border-blue-300 text-blue-900">
+                    <h3 class="text-blue-900">Monthly Financial Summary</h3>
+                    <p class="text-blue-800">**ID:** REP001</p>
+                    <p class="text-blue-800 text-sm mb-2">Summary of company's financial performance for July 2025.</p>
+                    <p class="text-blue-800 text-sm">**Type:** Financial</p>
+                    <p class="text-blue-800 text-sm">**Generated On:** 2025-08-01</p>
+                    <p class="text-blue-800 text-sm">**Generated By:** Finance Dept.</p>
+                    <span class="type-badge type-financial">Financial</span>
+                    <div class="flex justify-end mt-4 space-x-3">
+                        <a href="#" class="text-blue-700 hover:text-blue-900" title="View Report"><i class="fas fa-eye text-lg"></i></a>
+                        <a href="#" class="text-blue-700 hover:text-blue-900" title="Download Report"><i class="fas fa-download text-lg"></i></a>
+                        <a href="#" class="text-blue-700 hover:text-blue-900" title="Delete Report"><i class="fas fa-trash-alt text-lg"></i></a>
+                    </div>
+                </div>
+
+                <!-- Example Report Card 2 (Performance) -->
+                <div class="report-card bg-green-100 border border-green-300 text-green-900">
+                    <h3 class="text-green-900">Employee Performance Review - Q2</h3>
+                    <p class="text-green-800">**ID:** REP002</p>
+                    <p class="text-green-800 text-sm mb-2">Aggregated performance metrics for all employees in Q2 2025.</p>
+                    <p class="text-green-800 text-sm">**Type:** Performance</p>
+                    <p class="text-green-800 text-sm">**Generated On:** 2025-07-25</p>
+                    <p class="text-green-800 text-sm">**Generated By:** HR Dept.</p>
+                    <span class="type-badge type-performance">Performance</span>
+                    <div class="flex justify-end mt-4 space-x-3">
+                        <a href="#" class="text-green-700 hover:text-green-900" title="View Report"><i class="fas fa-eye text-lg"></i></a>
+                        <a href="#" class="text-green-700 hover:text-green-900" title="Download Report"><i class="fas fa-download text-lg"></i></a>
+                        <a href="#" class="text-green-700 hover:text-green-900" title="Delete Report"><i class="fas fa-trash-alt text-lg"></i></a>
+                    </div>
+                </div>
+
+                <!-- Example Report Card 3 (Attendance) -->
+                <div class="report-card bg-red-100 border border-red-300 text-red-900">
+                    <h3 class="text-red-900">Daily Attendance Summary - 2025-07-24</h3>
+                    <p class="text-red-800">**ID:** REP003</p>
+                    <p class="text-red-800 text-sm mb-2">Summary of employee attendance for today.</p>
+                    <p class="text-red-800 text-sm">**Type:** Attendance</p>
+                    <p class="text-red-800 text-sm">**Generated On:** 2025-07-24</p>
+                    <p class="text-red-800 text-sm">**Generated By:** Admin</p>
+                    <span class="type-badge type-attendance">Attendance</span>
+                    <div class="flex justify-end mt-4 space-x-3">
+                        <a href="#" class="text-red-700 hover:text-red-900" title="View Report"><i class="fas fa-eye text-lg"></i></a>
+                        <a href="#" class="text-red-700 hover:text-red-900" title="Download Report"><i class="fas fa-download text-lg"></i></a>
+                        <a href="#" class="text-red-700 hover:text-red-900" title="Delete Report"><i class="fas fa-trash-alt text-lg"></i></a>
+                    </div>
+                </div>
+
+                <!-- Example Report Card 4 (Project) -->
+                <div class="report-card bg-orange-100 border border-orange-300 text-orange-900">
+                    <h3 class="text-orange-900">Project Status Report - Website Redesign</h3>
+                    <p class="text-orange-800">**ID:** REP004</p>
+                    <p class="text-orange-800 text-sm mb-2">Current progress and milestones for the Website Redesign project.</p>
+                    <p class="text-orange-800 text-sm">**Type:** Project</p>
+                    <p class="text-orange-800 text-sm">**Generated On:** 2025-07-23</p>
+                    <p class="text-orange-800 text-sm">**Generated By:** Project Manager</p>
+                    <span class="type-badge type-project">Project</span>
+                    <div class="flex justify-end mt-4 space-x-3">
+                        <a href="#" class="text-orange-700 hover:text-orange-900" title="View Report"><i class="fas fa-eye text-lg"></i></a>
+                        <a href="#" class="text-orange-700 hover:text-orange-900" title="Download Report"><i class="fas fa-download text-lg"></i></a>
+                        <a href="#" class="text-orange-700 hover:text-orange-900" title="Delete Report"><i class="fas fa-trash-alt text-lg"></i></a>
+                    </div>
+                </div>
+
+                <!-- Example Report Card 5 (Leave) -->
+                <div class="report-card bg-indigo-100 border border-indigo-300 text-indigo-900">
+                    <h3 class="text-indigo-900">Monthly Leave Summary - July</h3>
+                    <p class="text-indigo-800">**ID:** REP005</p>
+                    <p class="text-indigo-800 text-sm mb-2">Overview of all leave requests and approvals for July.</p>
+                    <p class="text-indigo-800 text-sm">**Type:** Leave</p>
+                    <p class="text-indigo-800 text-sm">**Generated On:** 2025-08-01</p>
+                    <p class="text-indigo-800 text-sm">**Generated By:** HR Dept.</p>
+                    <span class="type-badge type-leave">Leave</span>
+                    <div class="flex justify-end mt-4 space-x-3">
+                        <a href="#" class="text-indigo-700 hover:text-indigo-900" title="View Report"><i class="fas fa-eye text-lg"></i></a>
+                        <a href="#" class="text-indigo-700 hover:text-indigo-900" title="Download Report"><i class="fas fa-download text-lg"></i></a>
+                        <a href="#" class="text-indigo-700 hover:text-indigo-900" title="Delete Report"><i class="fas fa-trash-alt text-lg"></i></a>
+                    </div>
+                </div>
+
+                 <!-- Example Report Card 6 (Custom) -->
+                 <div class="report-card bg-purple-100 border border-purple-30-0 text-purple-900">
+                    <h3 class="text-purple-900">Custom Data Export - Employee Skills</h3>
+                    <p class="text-purple-800">**ID:** REP006</p>
+                    <p class="text-purple-800 text-sm mb-2">Export of all employee skills data for training analysis.</p>
+                    <p class="text-purple-800 text-sm">**Type:** Custom</p>
+                    <p class="text-purple-800 text-sm">**Generated On:** 2025-07-20</p>
+                    <p class="text-purple-800 text-sm">**Generated By:** Admin</p>
+                    <span class="type-badge type-custom">Custom</span>
+                    <div class="flex justify-end mt-4 space-x-3">
+                        <a href="#" class="text-purple-700 hover:text-purple-900" title="View Report"><i class="fas fa-eye text-lg"></i></a>
+                        <a href="#" class="text-purple-700 hover:text-purple-900" title="Download Report"><i class="fas fa-download text-lg"></i></a>
+                        <a href="#" class="text-purple-700 hover:text-purple-900" title="Delete Report"><i class="fas fa-trash-alt text-lg"></i></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer Section -->
+    <footer class="bg-gray-800 text-white p-4 text-center mt-auto rounded-t-lg">
+        <p class="text-sm">&copy; 2025 Wordlane Tech. All rights reserved.</p>
+    </footer>
+
+    <script>
+        const profileButton = document.getElementById('profileButton');
+        const profileDropdown = document.getElementById('profileDropdown');
+
+        // Toggle dropdown visibility
+        profileButton.addEventListener('click', (event) => {
+            event.stopPropagation(); // Prevent click from immediately closing it
+            profileDropdown.classList.toggle('show');
+        });
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', (event) => {
+            if (!profileDropdown.contains(event.target) && !profileButton.contains(event.target)) {
+                profileDropdown.classList.remove('show');
+            }
+        });
+
+        // Placeholder for future dynamic data fetching
+        document.addEventListener('DOMContentLoaded', () => {
+            // async function fetchReportsData() {
+            //     try {
+            //         const response = await fetch('/api/reports'); // Your API endpoint
+            //         if (!response.ok) {
+            //             throw new Error(`HTTP error! status: ${response.status}`);
+            //         }
+            //         const reports = await response.json();
+            //
+            //         const reportsGrid = document.querySelector('.grid');
+            //         reportsGrid.innerHTML = ''; // Clear existing cards
+            //
+            //         reports.forEach(report => {
+            //             const typeClass = report.type.toLowerCase().replace(/\s/g, '-'); // e.g., 'financial', 'performance'
+            //             const cardColorClass = getReportCardColor(report.type); // Function to determine color based on type
+            //
+            //             const card = `
+            //                 <div class="report-card ${cardColorClass}">
+            //                     <h3 class="${cardColorClass.replace('-100', '-900').replace('-200', '-900')}">${report.name}</h3>
+            //                     <p class="${cardColorClass.replace('-100', '-800').replace('-200', '-800')}">**ID:** ${report.id}</p>
+            //                     <p class="${cardColorClass.replace('-100', '-800').replace('-200', '-800')} text-sm mb-2">${report.description}</p>
+            //                     <p class="${cardColorClass.replace('-100', '-800').replace('-200', '-800')} text-sm">**Type:** ${report.type}</p>
+            //                     <p class="${cardColorClass.replace('-100', '-800').replace('-200', '-800')} text-sm">**Generated On:** ${report.generatedDate}</p>
+            //                     <p class="${cardColorClass.replace('-100', '-800').replace('-200', '-800')} text-sm">**Generated By:** ${report.generatedBy}</p>
+            //                     <span class="type-badge type-${typeClass}">${report.type}</span>
+            //                     <div class="flex justify-end mt-4 space-x-3">
+            //                         <a href="#" class="${cardColorClass.replace('-100', '-700').replace('-200', '-700')} hover:${cardColorClass.replace('-100', '-900').replace('-200', '-900')}" title="View Report"><i class="fas fa-eye text-lg"></i></a>
+            //                         <a href="#" class="${cardColorClass.replace('-100', '-700').replace('-200', '-700')} hover:${cardColorClass.replace('-100', '-900').replace('-200', '-900')}" title="Download Report"><i class="fas fa-download text-lg"></i></a>
+            //                         <a href="#" class="text-red-700 hover:text-red-900" title="Delete Report"><i class="fas fa-trash-alt text-lg"></i></a>
+            //                     </div>
+            //                 </div>
+            //             `;
+            //             reportsGrid.insertAdjacentHTML('beforeend', card);
+            //         });
+            //
+            //     } catch (error) {
+            //         console.error('Error fetching reports data:', error);
+            //         // Display a user-friendly message on the page
+            //     }
+            // }
+            //
+            // // Helper function to get card color based on report type
+            // function getReportCardColor(type) {
+            //     switch (type.toLowerCase()) {
+            //         case 'financial':
+            //             return 'bg-blue-100 border-blue-300 text-blue-900';
+            //         case 'performance':
+            //             return 'bg-green-100 border-green-300 text-green-900';
+            //         case 'attendance':
+            //             return 'bg-red-100 border-red-300 text-red-900';
+            //         case 'project':
+            //             return 'bg-orange-100 border-orange-300 text-orange-900';
+            //         case 'leave':
+            //             return 'bg-indigo-100 border-indigo-300 text-indigo-900';
+            //         case 'custom':
+            //             return 'bg-purple-100 border-purple-300 text-purple-900';
+            //         default:
+            //             return 'bg-gray-100 border-gray-300 text-gray-900';
+            //     }
+            // }
+            //
+            // fetchReportsData();
+        });
+    </script>
+</body>
+</html>

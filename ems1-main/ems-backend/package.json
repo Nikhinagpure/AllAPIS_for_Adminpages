@@ -1,0 +1,30 @@
+{
+  "name": "ems-backend",
+  "version": "1.0.0",
+  "description": "Node.js Express API for Employee Management System with MySQL",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js",
+    "dev": "nodemon app.js"
+  },
+  "keywords": [
+    "express",
+    "mysql",
+    "api",
+    "ems",
+    "nodejs"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "bcryptjs": "^3.0.2",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "multer": "^2.0.2",
+    "mysql2": "^3.10.2"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.4"
+  }
+}

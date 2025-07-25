@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Wordlane Tech Employee Management System - Add New Employee.">
+    <meta name="keywords" content="Employee Management, HR, Add Employee, Wordlane Tech">
+    <meta name="author" content="Wordlane Tech">
+    <title>Wordlane Tech - Add Employee</title>
+
+    <!-- Google Fonts: Roboto for professional typography -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" xintegrity="sha512-Fo3rlrZj/k7ujTnHg4CGR2D7kSs0V4LLanw2qksYuRlEzO+tcaEPQogQ0KaoGN26/zrn20ImR1DfuLWnOo7aBA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <style>
+        /* Base font application */
+        body {
+            font-family: 'Roboto', sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        /* Custom gradient for header */
+        .header-gradient {
+            background: linear-gradient(to right, #87CEEB, #ADD8E6); /* Light sky blue to slightly lighter */
+        }
+
+        /* Profile dropdown styling */
+        .profile-dropdown {
+            position: absolute;
+            top: calc(100% + 10px); /* Position below the icon, with some spacing */
+            right: 0;
+            background-color: white;
+            border-radius: 0.75rem; /* rounded-xl */
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); /* shadow-lg */
+            z-index: 20; /* Above other content */
+            min-width: 150px;
+            overflow: hidden; /* Ensures rounded corners apply to children */
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: opacity 0.2s ease-out, transform 0.2s ease-out, visibility 0.2s ease-out;
+        }
+        .profile-dropdown.show {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+        .profile-dropdown a {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1rem; /* p-3 px-4 */
+            color: #4B5563; /* text-gray-700 */
+            font-weight: 500; /* font-medium */
+            transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out;
+        }
+        .profile-dropdown a:hover {
+            background-color: #F3F4F6; /* bg-gray-100 */
+            color: #1F2937; /* text-gray-900 */
+        }
+        .profile-dropdown a i {
+            margin-right: 0.75rem; /* mr-3 */
+            font-size: 1.125rem; /* text-lg */
+        }
+
+        /* Responsive adjustments for smaller screens */
+        @media (max-width: 768px) {
+            .header-gradient {
+                padding: 1rem; /* Adjust padding for smaller screens */
+            }
+            .header-gradient h1 {
+                font-size: 1.75rem; /* Smaller font for company name */
+            }
+            .header-gradient img {
+                width: 35px;
+                height: 35px;
+            }
+            .nav-list {
+                flex-direction: column; /* Stack nav items vertically */
+                align-items: center;
+                space-x: 0; /* Remove horizontal spacing */
+            }
+            .nav-list li {
+                margin-bottom: 0.75rem; /* Add vertical spacing */
+            }
+            .nav-list li:last-child {
+                margin-bottom: 0;
+            }
+            .page-title {
+                font-size: 2.5rem; /* Adjust title size */
+            }
+            .profile-dropdown {
+                right: 1rem; /* Adjust position for mobile */
+                min-width: unset; /* Allow width to adjust */
+                width: calc(100% - 2rem); /* Take full width minus padding */
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen flex flex-col">
+
+    <!-- Header Section -->
+    <header class="header-gradient p-5 shadow-lg rounded-b-xl flex flex-col sm:flex-row items-center justify-between sticky top-0 z-10">
+        <!-- Left side: Logo and Company Name (clickable to dashboard) -->
+        <a href="dashboard.html" class="flex items-center mb-4 sm:mb-0 text-gray-800 no-underline hover:opacity-80 transition duration-200">
+            <!-- Company Logo -->
+            <img src="../../photos/logo.png" alt="Wordlane Tech Logo" class="mr-4 w-16 h-16 object-contain">
+            <h1 class="text-3xl font-bold tracking-wide">Wordlane Tech</h1>
+        </a>
+
+        <!-- Right side: Profile icon with dropdown -->
+        <div class="relative">
+            <button id="profileButton" class="bg-gray-700 hover:bg-gray-900 text-white w-12 h-12 rounded-full flex items-center justify-center shadow-lg transition duration-300 ease-in-out transform hover:scale-110 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-opacity-50" aria-label="User Profile Menu">
+                <!-- Profile picture placeholder -->
+                <img src="https://placehold.co/48x48/CCCCCC/FFFFFF?text=JP" alt="User Profile" class="w-full h-full rounded-full object-cover">
+            </button>
+
+            <!-- Profile Dropdown Menu -->
+            <div id="profileDropdown" class="profile-dropdown">
+                <a href="profile.html" class="flex items-center">
+                    <i class="fas fa-user mr-3" aria-hidden="true"></i>
+                    Details
+                </a>
+                <a href="../../login.html" class="flex items-center">
+                    <i class="fas fa-sign-out-alt mr-3" aria-hidden="true"></i>
+                    Log Out
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Navigation Bar for Employee Management System -->
+    <nav class="bg-gray-800 p-4 shadow-md">
+        <ul class="flex flex-wrap justify-center space-x-4 sm:space-x-10 nav-list">
+            <li><a href="dashboard.html" class="text-white text-lg font-medium hover:text-sky-300 transition duration-300 ease-in-out p-2 rounded-md hover:bg-gray-700">Dashboard</a></li>
+            <li><a href="employee.html" class="text-sky-300 text-lg font-medium transition duration-300 ease-in-out p-2 rounded-md bg-gray-700">Employees</a></li>
+            <li><a href="departments.html" class="text-white text-lg font-medium hover:text-sky-300 transition duration-300 ease-in-out p-2 rounded-md hover:bg-gray-700">Departments</a></li>
+            <li><a href="attendance.html" class="text-white text-lg font-medium hover:text-sky-300 transition duration-300 ease-in-out p-2 rounded-md hover:bg-gray-700">Attendance</a></li>
+            <li><a href="projects.html" class="text-white text-lg font-medium hover:text-sky-300 transition duration-300 ease-in-out p-2 rounded-md hover:bg-gray-700">Projects</a></li>
+            <li><a href="tasks.html" class="text-white text-lg font-medium hover:text-sky-300 transition duration-300 ease-in-out p-2 rounded-md hover:bg-gray-700">Tasks</a></li>
+            <li><a href="leaves.html" class="text-white text-lg font-medium hover:text-sky-300 transition duration-300 ease-in-out p-2 rounded-md hover:bg-gray-700">Leaves</a></li>
+            <li><a href="documents.html" class="text-white text-lg font-medium hover:text-sky-300 transition duration-300 ease-in-out p-2 rounded-md hover:bg-gray-700">Documents</a></li>
+            <li><a href="reports.html" class="text-white text-lg font-medium hover:text-sky-300 transition duration-300 ease-in-out p-2 rounded-md hover:bg-gray-700">Reports</a></li>
+        </ul>
+    </nav>
+
+    <!-- Main Content Area - Add New Employee Form -->
+    <main class="flex-grow p-8 bg-gray-50">
+        <div class="max-w-3xl mx-auto bg-white rounded-xl shadow-lg p-8">
+            <h2 class="text-3xl font-extrabold text-gray-900 mb-8 text-center">Add New Employee</h2>
+
+            <form id="addEmployeeForm" class="space-y-6">
+                <!-- Personal Information Section -->
+                <fieldset class="border border-gray-200 p-6 rounded-lg shadow-sm">
+                    <legend class="text-xl font-semibold text-gray-700 px-2">Personal Information</legend>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                        <div>
+                            <label for="firstName" class="block text-sm font-medium text-gray-700 mb-1">First Name</label>
+                            <input type="text" id="firstName" name="first_name" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" required>
+                        </div>
+                        <div>
+                            <label for="lastName" class="block text-sm font-medium text-gray-700 mb-1">Last Name</label>
+                            <input type="text" id="lastName" name="last_name" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" required>
+                        </div>
+                        <div>
+                            <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                            <input type="email" id="email" name="email" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" required>
+                        </div>
+                        <div>
+                            <label for="phoneNumber" class="block text-sm font-medium text-gray-700 mb-1">Phone Number</label>
+                            <input type="tel" id="phoneNumber" name="phone" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                        </div>
+                        <div>
+                            <label for="dateOfBirth" class="block text-sm font-medium text-gray-700 mb-1">Date of Birth</label>
+                            <input type="date" id="dateOfBirth" name="date_of_birth" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                        </div>
+                        <div>
+                            <label for="gender" class="block text-sm font-medium text-gray-700 mb-1">Gender</label>
+                            <select id="gender" name="gender_id" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                                <option value="">Select Gender</option>
+                                <!-- Options will be dynamically loaded here -->
+                            </select>
+                        </div>
+                    </div>
+                </fieldset>
+
+                <!-- Employment Details Section -->
+                <fieldset class="border border-gray-200 p-6 rounded-lg shadow-sm">
+                    <legend class="text-xl font-semibold text-gray-700 px-2">Employment Details</legend>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                        <div>
+                            <label for="hireDate" class="block text-sm font-medium text-gray-700 mb-1">Hire Date</label>
+                            <input type="date" id="hireDate" name="joining_date" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" required>
+                        </div>
+                        <div>
+                            <label for="designationId" class="block text-sm font-medium text-gray-700 mb-1">Designation</label>
+                            <select id="designationId" name="designation_id" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                                <option value="">Select Designation</option>
+                                <!-- Options will be dynamically loaded here -->
+                            </select>
+                        </div>
+                        <div>
+                            <label for="roleId" class="block text-sm font-medium text-gray-700 mb-1">Role</label>
+                            <select id="roleId" name="role_id" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                                <option value="">Select Role</option>
+                                <!-- Options will be dynamically loaded here -->
+                            </select>
+                        </div>
+                        <div>
+                            <label for="departmentId" class="block text-sm font-medium text-gray-700 mb-1">Department</label>
+                            <select id="departmentId" name="department_id" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                                <option value="">Select Department</option>
+                                <!-- Options will be dynamically loaded here -->
+                            </select>
+                        </div>
+                        <!-- Removed jobId, salary, managerId, status as they are not in the emp_employees table schema provided -->
+                    </div>
+                </fieldset>
+
+                <!-- Address Information Section -->
+                <fieldset class="border border-gray-200 p-6 rounded-lg shadow-sm">
+                    <legend class="text-xl font-semibold text-gray-700 px-2">Address Information</legend>
+                    <div class="space-y-4 mt-4">
+                        <div>
+                            <label for="address" class="block text-sm font-medium text-gray-700 mb-1">Address</label>
+                            <input type="text" id="address" name="address" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                        </div>
+                        <!-- Removed city, state, zipCode as they are not in the emp_employees table schema provided -->
+                    </div>
+                </fieldset>
+
+                <div class="flex justify-end space-x-4 mt-6">
+                    <button type="button" onclick="window.location.href='employee.html'" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded-lg shadow-md transition duration-300 ease-in-out">
+                        Cancel
+                    </button>
+                    <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg shadow-md transition duration-300 ease-in-out">
+                        <i class="fas fa-save mr-2"></i> Save Employee
+                    </button>
+                </div>
+            </form>
+        </div>
+    </main>
+
+    <!-- Footer Section -->
+    <footer class="bg-gray-800 text-white p-4 text-center mt-auto rounded-t-lg">
+        <p class="text-sm">&copy; 2025 Wordlane Tech. All rights reserved.</p>
+    </footer>
+
+    <!-- Custom Modal for Messages (replaces alert()) -->
+    <div id="customModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center hidden z-50">
+        <div class="bg-white p-6 rounded-lg shadow-xl max-w-sm w-full text-center">
+            <p id="modalMessage" class="text-lg font-semibold text-gray-800 mb-4"></p>
+            <button id="modalCloseButton" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg">OK</button>
+        </div>
+    </div>
+
+    <script>
+        // --- Start of Consolidated JavaScript for add_employee.html ---
+
+        // DOM Elements
+        const profileButton = document.getElementById('profileButton');
+        const profileDropdown = document.getElementById('profileDropdown');
+        const addEmployeeForm = document.getElementById('addEmployeeForm');
+
+        // Modal elements
+        const customModal = document.getElementById('customModal');
+        const modalMessage = document.getElementById('modalMessage');
+        const modalCloseButton = document.getElementById('modalCloseButton');
+
+        // Dropdown elements
+        const genderSelect = document.getElementById('gender');
+        const departmentSelect = document.getElementById('departmentId');
+        const designationSelect = document.getElementById('designationId');
+        const roleSelect = document.getElementById('roleId');
+
+        // --- Custom Modal Function ---
+        /**
+         * Displays a custom modal message.
+         * @param {string} message - The message to display in the modal.
+         */
+        function showCustomModal(message) {
+            modalMessage.textContent = message;
+            customModal.classList.remove('hidden');
+        }
+
+        // Close modal when OK button is clicked
+        if (modalCloseButton) {
+            modalCloseButton.addEventListener('click', () => {
+                customModal.classList.add('hidden');
+            });
+        }
+
+        // --- Backend API Endpoints ---
+        const API_BASE_URL = 'http://localhost:3000/api'; 
+
+        /**
+         * Fetches data from a given API endpoint and populates a select element.
+         * @param {string} endpoint - The API endpoint (e.g., '/api/genders').
+         * @param {HTMLElement} selectElement - The <select> element to populate.
+         * @param {string} valueKey - The key for the option's value (e.g., 'id').
+         * @param {string} textKey - The key for the option's display text (e.g., 'name').
+         */
+        async function populateDropdown(endpoint, selectElement, valueKey, textKey) {
+            const fullUrl = `${API_BASE_URL}${endpoint}`;
+            console.log(`Attempting to fetch from: ${fullUrl}`); // Log the URL being fetched
+            try {
+                const response = await fetch(fullUrl);
+                if (!response.ok) {
+                    let errorMessageText = `HTTP error! Status: ${response.status}`;
+                    try {
+                        const errorData = await response.json();
+                        errorMessageText += `, Details: ${errorData.details || JSON.stringify(errorData)}`;
+                    } catch (jsonError) {
+                        // If response is not JSON, use statusText or a generic message
+                        errorMessageText += `, Details: ${response.statusText || 'No additional details available.'}`;
+                    }
+                    throw new Error(errorMessageText);
+                }
+                const data = await response.json();
+                
+                // Clear existing options, keeping the default "Select..." option
+                selectElement.innerHTML = '<option value="">Select ' + textKey.replace(/_name$/, '') + '</option>'; 
+
+                data.forEach(item => {
+                    const option = document.createElement('option');
+                    option.value = item[valueKey];
+                    option.textContent = item[textKey];
+                    selectElement.appendChild(option);
+                });
+            } catch (error) {
+                console.error(`Error fetching ${endpoint}:`, error);
+                let userMessage = `Failed to load ${textKey.replace(/_name$/, '')} data.`;
+                if (error.message.includes('Failed to fetch')) {
+                    userMessage += ` Please ensure your backend server is running on ${API_BASE_URL} and accessible.`;
+                } else {
+                    userMessage += ` Details: ${error.message}`;
+                }
+                showCustomModal(userMessage);
+            }
+        }
+
+        // Fetch and populate all dropdowns
+        async function loadDropdowns() {
+            await populateDropdown('/genders', genderSelect, 'id', 'name');
+            await populateDropdown('/departments', departmentSelect, 'id', 'name'); // Assuming /api/departments endpoint
+            await populateDropdown('/designations', designationSelect, 'id', 'name'); // Assuming /api/designations endpoint
+            await populateDropdown('/roles', roleSelect, 'id', 'name'); // Assuming /api/roles endpoint
+        }
+
+        // Function to generate a UUID (Universally Unique Identifier)
+        function generateUUID() {
+            return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+                var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+                return v.toString(16);
+            });
+        }
+
+        // --- Form Submission Logic ---
+        if (addEmployeeForm) {
+            addEmployeeForm.addEventListener('submit', async function(event) {
+                event.preventDefault(); // Prevent default form submission
+
+                const formData = new FormData(this);
+                const employeeData = {};
+
+                // Map form fields to backend column names
+                for (let [key, value] of formData.entries()) {
+                    employeeData[key] = value;
+                }
+
+                // Generate UUIDs for id and user_id
+                employeeData.id = generateUUID();
+                employeeData.user_id = generateUUID(); 
+                
+                // Placeholder for password_hash (IMPORTANT: In production, handle securely on backend)
+                employeeData.password_hash = 'placeholder_hash_123'; 
+
+                // Ensure numeric fields are converted to numbers if needed by backend
+                employeeData.gender_id = employeeData.gender_id ? parseInt(employeeData.gender_id) : null;
+                employeeData.designation_id = employeeData.designation_id ? parseInt(employeeData.designation_id) : null;
+                employeeData.role_id = employeeData.role_id ? parseInt(employeeData.role_id) : null;
+                employeeData.department_id = employeeData.department_id ? parseInt(employeeData.department_id) : null;
+                
+                // Ensure empty strings are sent as null for optional fields if your DB expects it
+                for (const key in employeeData) {
+                    if (employeeData[key] === '') {
+                        employeeData[key] = null;
+                    }
+                }
+
+                console.log('Employee Data to be saved:', employeeData);
+
+                try {
+                    const response = await fetch(`${API_BASE_URL}/employees`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(employeeData)
+                    });
+
+                    if (!response.ok) {
+                        const errorData = await response.json();
+                        throw new Error(`HTTP error! Status: ${response.status}, Details: ${errorData.details || response.statusText}`);
+                    }
+
+                    const result = await response.json();
+                    console.log('Employee added successfully:', result);
+                    showCustomModal('Employee added successfully!');
+                    // Redirect to employees list after successful submission
+                    setTimeout(() => {
+                        window.location.href = 'employee.html';
+                    }, 1500); // Redirect after 1.5 seconds
+                    
+                } catch (error) {
+                    console.error("Error adding employee:", error);
+                    showCustomModal(`Failed to add employee: ${error.message}`);
+                }
+            });
+        }
+
+        // --- Profile Dropdown Logic ---
+        if (profileButton && profileDropdown) {
+            profileButton.addEventListener('click', (event) => {
+                event.stopPropagation(); // Prevent click from immediately closing it
+                profileDropdown.classList.toggle('show');
+            });
+
+            document.addEventListener('click', (event) => {
+                if (!profileDropdown.contains(event.target) && !profileButton.contains(event.target)) {
+                    profileDropdown.classList.remove('show');
+                }
+            });
+        }
+
+        // Initial load of dropdowns when the page loads
+        document.addEventListener('DOMContentLoaded', loadDropdowns);
+
+        // --- End of Consolidated JavaScript ---
+    </script>
+</body>
+</html>

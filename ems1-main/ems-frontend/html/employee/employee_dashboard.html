@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Wordlane Tech Employee Dashboard - Personal overview of tasks, leaves, and profile.">
+    <meta name="keywords" content="Employee Dashboard, HR, Tasks, Leaves, Profile, Wordlane Tech">
+    <meta name="author" content="Wordlane Tech">
+    <title>Wordlane Tech - Employee Dashboard</title>
+
+    <!-- Google Fonts: Roboto for professional typography -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" xintegrity="sha512-Fo3rlrZj/k7ujTnHg4CGR2D7kSs0V4LLanw2qksYuRlEzO+tcaEPQogQ0KaoGN26/zrn20ImR1DfuLWnOo7aBA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <style>
+        /* Base font application */
+        body {
+            font-family: 'Roboto', sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        /* Custom gradient for header */
+        .header-gradient {
+            background: linear-gradient(to right, #87CEEB, #ADD8E6); /* Light sky blue to slightly lighter */
+        }
+
+        /* Profile dropdown styling */
+        .profile-dropdown {
+            position: absolute;
+            top: calc(100% + 10px); /* Position below the icon, with some spacing */
+            right: 0;
+            background-color: white;
+            border-radius: 0.75rem; /* rounded-xl */
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); /* shadow-lg */
+            z-index: 20; /* Above other content */
+            min-width: 150px;
+            overflow: hidden; /* Ensures rounded corners apply to children */
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: opacity 0.2s ease-out, transform 0.2s ease-out, visibility 0.2s ease-out;
+        }
+        .profile-dropdown.show {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+        .profile-dropdown a {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1rem; /* p-3 px-4 */
+            color: #4B5563; /* text-gray-700 */
+            font-weight: 500; /* font-medium */
+            transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out;
+        }
+        .profile-dropdown a:hover {
+            background-color: #F3F4F6; /* bg-gray-100 */
+            color: #1F2937; /* text-gray-900 */
+        }
+        .profile-dropdown a i {
+            margin-right: 0.75rem; /* mr-3 */
+            font-size: 1.125rem; /* text-lg */
+        }
+
+        /* Responsive adjustments for smaller screens */
+        @media (max-width: 768px) {
+            .header-gradient {
+                padding: 1rem; /* Adjust padding for smaller screens */
+            }
+            .header-gradient h1 {
+                font-size: 1.75rem; /* Smaller font for company name */
+            }
+            .header-gradient img {
+                width: 35px;
+                height: 35px;
+            }
+            .nav-list {
+                flex-direction: column; /* Stack nav items vertically */
+                align-items: center;
+                space-x: 0; /* Remove horizontal spacing */
+            }
+            .nav-list li {
+                margin-bottom: 0.75rem; /* Add vertical spacing */
+            }
+            .nav-list li:last-child {
+                margin-bottom: 0;
+            }
+            .page-title {
+                font-size: 2.5rem; /* Adjust title size */
+            }
+            .profile-dropdown {
+                right: 1rem; /* Adjust position for mobile */
+                min-width: unset; /* Allow width to adjust */
+                width: calc(100% - 2rem); /* Take full width minus padding */
+            }
+        }
+
+        /* Card specific styles for better readability and spacing */
+        .dashboard-card {
+            border-radius: 0.75rem; /* rounded-xl */
+            padding: 1.5rem; /* p-6 */
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); /* shadow-md */
+            transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+        }
+        .dashboard-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        .dashboard-card h3 {
+            font-size: 1.5rem; /* text-2xl */
+            font-weight: 700; /* font-bold */
+            margin-bottom: 0.5rem; /* mb-2 */
+        }
+        .dashboard-card p {
+            font-size: 0.95rem; /* text-md */
+            color: rgba(0, 0, 0, 0.7); /* darker text for readability */
+            margin-bottom: 0.5rem;
+        }
+        .dashboard-card .status-badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px; /* full rounded */
+            font-size: 0.75rem; /* text-xs */
+            font-weight: 600; /* font-semibold */
+            margin-top: 0.75rem;
+        }
+        /* Specific card colors (example) */
+        .card-blue {
+            background-color: #DBEAFE; /* blue-100 */
+            border: 1px solid #93C5FD; /* blue-300 */
+            color: #1E40AF; /* blue-800 */
+        }
+        .card-green {
+            background-color: #D1FAE5; /* green-100 */
+            border: 1px solid #6EE7B7; /* green-300 */
+            color: #065F46; /* green-800 */
+        }
+        .card-yellow {
+            background-color: #FEF3C7; /* yellow-100 */
+            border: 1px solid #FCD34D; /* yellow-300 */
+            color: #92400E; /* yellow-800 */
+        }
+        .card-purple {
+            background-color: #EDE9FE; /* purple-100 */
+            border: 1px solid #C4B5FD; /* purple-300 */
+            color: #5B21B6; /* purple-800 */
+        }
+        .card-orange { /* New color for Projects */
+            background-color: #FFEDD5; /* orange-100 */
+            border: 1px solid #FDBA74; /* orange-300 */
+            color: #9A3412; /* orange-800 */
+        }
+
+        /* Status badge colors (reusing from previous definitions) */
+        .status-in-progress {
+            background-color: #BFDBFE; /* blue-200 */
+            color: #1E40AF; /* blue-800 */
+        }
+        .status-completed {
+            background-color: #D1FAE5; /* green-200 */
+            color: #065F46; /* green-800 */
+        }
+        .status-pending {
+            background-color: #FFEDD5; /* orange-200 */
+            color: #9A3412; /* orange-800 */
+        }
+        .status-approved {
+            background-color: #D1FAE5; /* green-200 */
+            color: #065F46; /* green-800 */
+        }
+        .status-rejected {
+            background-color: #FEE2E2; /* red-200 */
+            color: #991B1B; /* red-800 */
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen flex flex-col">
+
+    <!-- Header Section -->
+    <header class="header-gradient p-5 shadow-lg rounded-b-xl flex flex-col sm:flex-row items-center justify-between sticky top-0 z-10">
+        <!-- Left side: Logo and Company Name (clickable to dashboard) -->
+        <a href="employee_dashboard.html" class="flex items-center mb-4 sm:mb-0 text-gray-800 no-underline hover:opacity-80 transition duration-200">
+            <!-- Company Logo -->
+            <img src="http://googleusercontent.com/file_content/3" alt="Wordlane Tech Logo" class="mr-4 w-16 h-16 object-contain">
+            <h1 class="text-3xl font-bold tracking-wide">Wordlane Tech</h1>
+        </a>
+
+        <!-- Right side: Profile icon with dropdown -->
+        <div class="relative">
+            <button id="profileButton" class="bg-gray-700 hover:bg-gray-900 text-white w-12 h-12 rounded-full flex items-center justify-center shadow-lg transition duration-300 ease-in-out transform hover:scale-110 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-opacity-50" aria-label="User Profile Menu">
+                <!-- Profile picture placeholder -->
+                <img src="https://placehold.co/48x48/CCCCCC/FFFFFF?text=JP" alt="User Profile" class="w-full h-full rounded-full object-cover">
+            </button>
+
+            <!-- Profile Dropdown Menu -->
+            <div id="profileDropdown" class="profile-dropdown">
+                <a href="employee_profile.html" class="flex items-center">
+                    <i class="fas fa-user mr-3" aria-hidden="true"></i>
+                    My Profile
+                </a>
+                <a href="../../login.html" class="flex items-center">
+                    <i class="fas fa-sign-out-alt mr-3" aria-hidden="true"></i>
+                    Log Out
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Navigation Bar for Employee Dashboard -->
+    <nav class="bg-gray-800 p-4 shadow-md">
+        <ul class="flex flex-wrap justify-center space-x-4 sm:space-x-10 nav-list">
+            <li><a href="employee_dashboard.html" class="text-sky-300 text-lg font-medium transition duration-300 ease-in-out p-2 rounded-md bg-gray-700">Dashboard</a></li>
+            <li><a href="employee_projects.html" class="text-white text-lg font-medium hover:text-sky-300 transition duration-300 ease-in-out p-2 rounded-md hover:bg-gray-700">My Projects</a></li>
+            <li><a href="employee_tasks.html" class="text-white text-lg font-medium hover:text-sky-300 transition duration-300 ease-in-out p-2 rounded-md hover:bg-gray-700">My Tasks</a></li>
+            <li><a href="employee_leaves.html" class="text-white text-lg font-medium hover:text-sky-300 transition duration-300 ease-in-out p-2 rounded-md hover:bg-gray-700">My Leaves</a></li>
+            <li><a href="employee_documents.html" class="text-white text-lg font-medium hover:text-sky-300 transition duration-300 ease-in-out p-2 rounded-md hover:bg-gray-700">My Documents</a></li>
+        </ul>
+    </nav>
+
+    <!-- Main Content Area - Employee Dashboard Cards -->
+    <main class="flex-grow p-8 bg-gray-50">
+        <div class="max-w-7xl mx-auto">
+            <h2 class="text-3xl font-extrabold text-gray-900 page-title mb-8 text-center">Welcome, John Doe!</h2>
+
+            <!-- Dashboard Cards Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- My Profile Summary Card -->
+                <div class="dashboard-card card-blue">
+                    <h3 class="text-blue-900"><i class="fas fa-user-circle mr-2"></i> My Profile Summary</h3>
+                    <p class="text-blue-800">**Employee ID:** EMP001</p>
+                    <p class="text-blue-800">**Department:** Development</p>
+                    <p class="text-blue-800">**Position:** Software Engineer</p>
+                    <p class="text-blue-800">**Email:** john.doe@wordlanetech.com</p>
+                    <div class="flex justify-end mt-4">
+                        <a href="employee_profile.html" class="text-blue-700 hover:text-blue-900 font-semibold" title="View Full Profile">View Full Profile <i class="fas fa-arrow-right ml-1"></i></a>
+                    </div>
+                </div>
+
+                <!-- My Projects Card -->
+                <div class="dashboard-card card-orange">
+                    <h3 class="text-orange-900"><i class="fas fa-project-diagram mr-2"></i> My Projects</h3>
+                    <p class="text-orange-800">**Total Projects:** 2</p>
+                    <p class="text-orange-800">**Active Projects:** Website Redesign, Cloud Migration</p>
+                    <p class="text-orange-800">**Next Milestone:** Website Redesign - Phase 2 Completion (2025-09-01)</p>
+                    <span class="status-badge status-in-progress">2 In Progress</span>
+                    <div class="flex justify-end mt-4">
+                        <a href="employee_projects.html" class="text-orange-700 hover:text-orange-900 font-semibold" title="View All Projects">View All Projects <i class="fas fa-arrow-right ml-1"></i></a>
+                    </div>
+                </div>
+
+                <!-- My Active Tasks Card -->
+                <div class="dashboard-card card-green">
+                    <h3 class="text-green-900"><i class="fas fa-tasks mr-2"></i> My Active Tasks</h3>
+                    <p class="text-green-800">**Total Active:** 3</p>
+                    <p class="text-green-800">**Upcoming Due Date:** Develop Login Module (2025-08-15)</p>
+                    <p class="text-green-800">**Project:** Website Redesign</p>
+                    <span class="status-badge status-in-progress">1 In Progress</span>
+                    <span class="status-badge status-pending ml-2">2 Pending</span>
+                    <div class="flex justify-end mt-4">
+                        <a href="employee_tasks.html" class="text-green-700 hover:text-green-900 font-semibold" title="View All Tasks">View All Tasks <i class="fas fa-arrow-right ml-1"></i></a>
+                    </div>
+                </div>
+
+                <!-- My Leave Requests Card -->
+                <div class="dashboard-card card-yellow">
+                    <h3 class="text-yellow-900"><i class="fas fa-calendar-alt mr-2"></i> My Leave Requests</h3>
+                    <p class="text-yellow-800">**Pending Requests:** 1</p>
+                    <p class="text-yellow-800">**Approved Leaves (Upcoming):** 1</p>
+                    <p class="text-yellow-800">**Last Request:** Sick Leave (2025-07-25)</p>
+                    <span class="status-badge status-pending">1 Pending</span>
+                    <span class="status-badge status-approved ml-2">1 Approved</span>
+                    <div class="flex justify-end mt-4">
+                        <a href="employee_leaves.html" class="text-yellow-700 hover:text-yellow-900 font-semibold" title="Manage Leaves">Manage Leaves <i class="fas fa-arrow-right ml-1"></i></a>
+                    </div>
+                </div>
+
+                <!-- Latest Document Shared Card -->
+                <div class="dashboard-card card-purple">
+                    <h3 class="text-purple-900"><i class="fas fa-file-alt mr-2"></i> Latest Document</h3>
+                    <p class="text-purple-800">**Document Name:** Employee Handbook</p>
+                    <p class="text-purple-800">**Type:** Policy</p>
+                    <p class="text-purple-800">**Uploaded On:** 2025-01-01</p>
+                    <p class="text-purple-800">**Description:** Company policies and guidelines.</p>
+                    <div class="flex justify-end mt-4">
+                        <a href="employee_documents.html" class="text-purple-700 hover:text-purple-900 font-semibold" title="View All Documents">View All Documents <i class="fas fa-arrow-right ml-1"></i></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer Section -->
+    <footer class="bg-gray-800 text-white p-4 text-center mt-auto rounded-t-lg">
+        <p class="text-sm">&copy; 2025 Wordlane Tech. All rights reserved.</p>
+    </footer>
+
+    <script>
+        const profileButton = document.getElementById('profileButton');
+        const profileDropdown = document.getElementById('profileDropdown');
+
+        // Toggle dropdown visibility
+        profileButton.addEventListener('click', (event) => {
+            event.stopPropagation(); // Prevent click from immediately closing it
+            profileDropdown.classList.toggle('show');
+        });
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', (event) => {
+            if (!profileDropdown.contains(event.target) && !profileButton.contains(event.target)) {
+                profileDropdown.classList.remove('show');
+            }
+        });
+
+        // Placeholder for future dynamic data fetching
+        document.addEventListener('DOMContentLoaded', () => {
+            // async function fetchEmployeeDashboardData() {
+            //     try {
+            //         // Example: Fetch user profile data
+            //         const profileResponse = await fetch('/api/employee/profile');
+            //         const profileData = await profileResponse.json();
+            //         document.querySelector('.page-title').textContent = `Welcome, ${profileData.firstName} ${profileData.lastName}!`;
+            //
+            //         // Example: Fetch active tasks
+            //         const tasksResponse = await fetch('/api/employee/tasks/active');
+            //         const tasksData = await tasksResponse.json();
+            //         // Update 'My Active Tasks' card with actual data
+            //
+            //         // Example: Fetch leave requests
+            //         const leavesResponse = await fetch('/api/employee/leaves');
+            //         const leavesData = await leavesResponse.json();
+            //         // Update 'My Leave Requests' card with actual data
+            //
+            //         // Example: Fetch employee projects
+            //         const projectsResponse = await fetch('/api/employee/projects');
+            //         const projectsData = await projectsResponse.json();
+            //         // Update 'My Projects' card with actual data
+            //
+            //     } catch (error) {
+            //         console.error('Error fetching employee dashboard data:', error);
+            //         // Display a user-friendly message on the page
+            //     }
+            // }
+            // fetchEmployeeDashboardData();
+        });
+    </script>
+</body>
+</html>

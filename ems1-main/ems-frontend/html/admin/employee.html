@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Wordlane Tech Employee Management System - Manage employee details.">
+    <meta name="keywords" content="Employee Management, HR, Employees, Wordlane Tech">
+    <meta name="author" content="Wordlane Tech">
+    <title>Wordlane Tech - Employees</title>
+
+    <!-- Google Fonts: Roboto for professional typography -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" xintegrity="sha512-Fo3rlrZj/k7ujTnHg4CGR2D7kSs0V4LLanw2qksYuRlEzO+tcaEPQogQ0KaoGN26/zrn20ImR1DfuLWnOo7aBA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <style>
+        /* Base font application */
+        body {
+            font-family: 'Roboto', sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            background-color: #f3f4f6; /* Light gray background */
+            min-height: 100vh; /* Ensure body takes full viewport height */
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Custom gradient for header */
+        .header-gradient {
+            background: linear-gradient(to right, #87CEEB, #ADD8E6); /* Light sky blue to slightly lighter */
+        }
+
+        /* Card hover effect for interactivity */
+        .card-hover {
+            transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+        }
+        .card-hover:hover {
+            transform: translateY(-8px); /* More pronounced lift */
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2); /* Stronger shadow */
+        }
+
+        /* Profile dropdown styling */
+        .profile-dropdown {
+            position: absolute;
+            top: calc(100% + 10px); /* Position below the icon, with some spacing */
+            right: 0;
+            background-color: white;
+            border-radius: 0.75rem; /* rounded-xl */
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); /* shadow-lg */
+            z-index: 20; /* Above other content */
+            min-width: 150px;
+            overflow: hidden; /* Ensures rounded corners apply to children */
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: opacity 0.2s ease-out, transform 0.2s ease-out, visibility 0.2s ease-out;
+        }
+        .profile-dropdown.show {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+        .profile-dropdown a {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1rem; /* p-3 px-4 */
+            color: #4B5563; /* text-gray-700 */
+            font-weight: 500; /* font-medium */
+            transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out;
+        }
+        .profile-dropdown a:hover {
+            background-color: #F3F4F6; /* bg-gray-100 */
+            color: #1F2937; /* text-gray-900 */
+        }
+        .profile-dropdown a i {
+            margin-right: 0.75rem; /* mr-3 */
+            font-size: 1.125rem; /* text-lg */
+        }
+
+        /* Responsive adjustments for smaller screens */
+        @media (max-width: 768px) {
+            .header-gradient {
+                padding: 1rem; /* Adjust padding for smaller screens */
+            }
+            .header-gradient h1 {
+                font-size: 1.75rem; /* Smaller font for company name */
+            }
+            .header-gradient img {
+                width: 35px;
+                height: 35px;
+            }
+            .nav-list {
+                flex-direction: column; /* Stack nav items vertically */
+                align-items: center;
+                space-x: 0; /* Remove horizontal spacing */
+            }
+            .nav-list li {
+                margin-bottom: 0.75rem; /* Add vertical spacing */
+            }
+            .nav-list li:last-child {
+                margin-bottom: 0;
+            }
+            .page-title {
+                font-size: 2.5rem; /* Adjust title size */
+            }
+            .profile-dropdown {
+                right: 1rem; /* Adjust position for mobile */
+                min-width: unset; /* Allow width to adjust */
+                width: calc(100% - 2rem); /* Take full width minus padding */
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen flex flex-col">
+
+    <!-- Header Section -->
+    <header class="header-gradient p-5 shadow-lg rounded-b-xl flex flex-col sm:flex-row items-center justify-between sticky top-0 z-10">
+        <!-- Left side: Logo and Company Name (clickable to dashboard) -->
+        <a href="dashboard.html" class="flex items-center mb-4 sm:mb-0 text-gray-800 no-underline hover:opacity-80 transition duration-200">
+            <!-- Company Logo -->
+            <img src="https://placehold.co/64x64/ADD8E6/FFFFFF?text=WL" alt="Wordlane Tech Logo" class="mr-4 w-16 h-16 object-contain rounded-full">
+            <h1 class="text-3xl font-bold tracking-wide">Wordlane Tech</h1>
+        </a>
+
+        <!-- Right side: Profile icon with dropdown -->
+        <div class="relative">
+            <button id="profileButton" class="bg-gray-700 hover:bg-gray-900 text-white w-12 h-12 rounded-full flex items-center justify-center shadow-lg transition duration-300 ease-in-out transform hover:scale-110 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-opacity-50" aria-label="User Profile Menu">
+                <!-- Profile picture placeholder -->
+                <img src="https://placehold.co/48x48/CCCCCC/FFFFFF?text=JP" alt="User Profile" class="w-full h-full rounded-full object-cover">
+            </button>
+
+            <!-- Profile Dropdown Menu -->
+            <div id="profileDropdown" class="profile-dropdown">
+                <a href="profile.html" class="flex items-center">
+                    <i class="fas fa-user mr-3" aria-hidden="true"></i>
+                    Details
+                </a>
+                <a href="login.html" class="flex items-center">
+                    <i class="fas fa-sign-out-alt mr-3" aria-hidden="true"></i>
+                    Log Out
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Navigation Bar for Employee Management System -->
+    <nav class="bg-gray-800 p-4 shadow-md">
+        <ul class="flex flex-wrap justify-center space-x-4 sm:space-x-10 nav-list">
+            <li><a href="dashboard.html" class="text-white text-lg font-medium hover:text-sky-300 transition duration-300 ease-in-out p-2 rounded-md hover:bg-gray-700">Dashboard</a></li>
+            <li><a href="employees.html" class="text-sky-300 text-lg font-medium transition duration-300 ease-in-out p-2 rounded-md bg-gray-700">Employees</a></li>
+            <li><a href="departments.html" class="text-white text-lg font-medium hover:text-sky-300 transition duration-300 ease-in-out p-2 rounded-md hover:bg-gray-700">Departments</a></li>
+            <li><a href="attendance.html" class="text-white text-lg font-medium hover:text-sky-300 transition duration-300 ease-in-out p-2 rounded-md hover:bg-gray-700">Attendance</a></li>
+            <li><a href="projects.html" class="text-white text-lg font-medium hover:text-sky-300 transition duration-300 ease-in-out p-2 rounded-md hover:bg-gray-700">Projects</a></li>
+            <li><a href="tasks.html" class="text-white text-lg font-medium hover:text-sky-300 transition duration-300 ease-in-out p-2 rounded-md hover:bg-gray-700">Tasks</a></li>
+            <li><a href="leaves.html" class="text-white text-lg font-medium hover:text-sky-300 transition duration-300 ease-in-out p-2 rounded-md hover:bg-gray-700">Leaves</a></li>
+            <li><a href="documents.html" class="text-white text-lg font-medium hover:text-sky-300 transition duration-300 ease-in-out p-2 rounded-md hover:bg-gray-700">Documents</a></li>
+            <li><a href="reports.html" class="text-white text-lg font-medium hover:text-sky-300 transition duration-300 ease-in-out p-2 rounded-md hover:bg-gray-700">Reports</a></li>
+        </ul>
+    </nav>
+
+    <!-- Main Content Area - Employee List -->
+    <main class="flex-grow p-8 bg-gray-50">
+        <div class="max-w-7xl mx-auto">
+            <div class="flex flex-col sm:flex-row justify-between items-center mb-8">
+                <h2 class="text-3xl font-extrabold text-gray-900 page-title mb-4 sm:mb-0">Employee List</h2>
+                <div class="flex items-center space-x-4 w-full sm:w-auto">
+                    <!-- Search Bar -->
+                    <div class="relative flex-grow">
+                        <input type="text" id="employeeSearch" placeholder="Search employees by name, ID, or department..." class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-700">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <i class="fas fa-search text-gray-400"></i>
+                        </div>
+                    </div>
+                    <a href="add_employee.html" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg shadow-md transition duration-300 ease-in-out flex items-center flex-shrink-0">
+                        <i class="fas fa-plus mr-2"></i> Add Employee
+                    </a>
+                </div>
+            </div>
+
+            <!-- Summary Cards Section -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                <!-- Total Employees Card -->
+                <div class="bg-white rounded-xl shadow-lg p-6 flex items-center justify-between card-hover">
+                    <div>
+                        <p class="text-gray-500 text-sm font-medium uppercase">Total Employees</p>
+                        <p id="totalEmployees" class="text-4xl font-bold text-gray-900 mt-1">0</p>
+                    </div>
+                    <i class="fas fa-users text-5xl text-blue-500 opacity-75"></i>
+                </div>
+
+                <!-- Departments Card -->
+                <div class="bg-white rounded-xl shadow-lg p-6 flex items-center justify-between card-hover">
+                    <div>
+                        <p class="text-gray-500 text-sm font-medium uppercase">Departments</p>
+                        <p id="totalDepartments" class="text-4xl font-bold text-gray-900 mt-1">0</p>
+                    </div>
+                    <i class="fas fa-building text-5xl text-green-500 opacity-75"></i>
+                </div>
+
+                <!-- New Hires (Last 30 Days) Card -->
+                <div class="bg-white rounded-xl shadow-lg p-6 flex items-center justify-between card-hover">
+                    <div>
+                        <p class="text-gray-500 text-sm font-medium uppercase">New Hires (30 Days)</p>
+                        <p id="newHires" class="text-4xl font-bold text-gray-900 mt-1">0</p>
+                    </div>
+                    <i class="fas fa-user-plus text-5xl text-purple-500 opacity-75"></i>
+                </div>
+            </div>
+
+            <!-- Employee Cards Container -->
+            <div id="employeeCardsContainer" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Employee cards will be loaded here dynamically -->
+            </div>
+            <!-- Loading indicator -->
+            <div id="loadingIndicator" class="text-center text-gray-600 text-lg mt-8 hidden">
+                Loading employees...
+            </div>
+            <!-- If no employees are found -->
+            <div id="noEmployeesFound" class="hidden text-center text-gray-600 text-lg mt-8">
+                No employees found.
+            </div>
+            <!-- Error message display -->
+            <div id="errorMessage" class="hidden text-center text-red-600 text-lg mt-8">
+                An error occurred while loading employees.
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer Section -->
+    <footer class="bg-gray-800 text-white p-4 text-center mt-auto rounded-t-lg">
+        <p class="text-sm">&copy; 2025 Wordlane Tech. All rights reserved.</p>
+    </footer>
+
+    <!-- Custom Modal for Messages (replaces alert()) -->
+    <div id="customModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center hidden z-50">
+        <div class="bg-white p-6 rounded-lg shadow-xl max-w-sm w-full text-center">
+            <p id="modalMessage" class="text-lg font-semibold text-gray-800 mb-4"></p>
+            <button id="modalCloseButton" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg">OK</button>
+        </div>
+    </div>
+
+    <script>
+        // DOM Elements
+        const profileButton = document.getElementById('profileButton');
+        const profileDropdown = document.getElementById('profileDropdown');
+        const employeeSearch = document.getElementById('employeeSearch');
+        const employeeCardsContainer = document.getElementById('employeeCardsContainer');
+        const noEmployeesFound = document.getElementById('noEmployeesFound');
+        const loadingIndicator = document.getElementById('loadingIndicator');
+        const errorMessage = document.getElementById('errorMessage');
+
+        // Summary card elements
+        const totalEmployeesElement = document.getElementById('totalEmployees');
+        const totalDepartmentsElement = document.getElementById('totalDepartments');
+        const newHiresElement = document.getElementById('newHires');
+
+        // Modal elements
+        const customModal = document.getElementById('customModal');
+        const modalMessage = document.getElementById('modalMessage');
+        const modalCloseButton = document.getElementById('modalCloseButton');
+
+        let allEmployees = []; // To store all fetched employees for search filtering
+
+        // Define a color mapping for departments
+        const departmentColors = {
+            'IT': 'bg-blue-100 border-blue-300',
+            'HR': 'bg-green-100 border-green-300',
+            'Sales': 'bg-yellow-100 border-yellow-300',
+            'Marketing': 'bg-purple-100 border-purple-300',
+            'Finance': 'bg-red-100 border-red-300',
+            'Operations': 'bg-indigo-100 border-indigo-300',
+            'default': 'bg-gray-100 border-gray-300' // Fallback color
+        };
+
+        // --- Custom Modal Function ---
+        /**
+         * Displays a custom modal message.
+         * @param {string} message - The message to display in the modal.
+         */
+        function showCustomModal(message) {
+            modalMessage.textContent = message;
+            customModal.classList.remove('hidden');
+        }
+
+        // Close modal when OK button is clicked
+        modalCloseButton.addEventListener('click', () => {
+            customModal.classList.add('hidden');
+        });
+
+        // --- Backend API Endpoints ---
+        // IMPORTANT: Ensure your Node.js backend is running on this port.
+        const API_BASE_URL = 'http://localhost:3000/api'; 
+
+        /**
+         * Fetches employees from the backend API.
+         */
+        async function fetchEmployees() {
+            loadingIndicator.classList.remove('hidden');
+            errorMessage.classList.add('hidden');
+            noEmployeesFound.classList.add('hidden');
+            employeeCardsContainer.innerHTML = ''; // Clear existing cards
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/employees`);
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(`HTTP error! Status: ${response.status}, Details: ${errorData.details || response.statusText}`);
+                }
+                const data = await response.json();
+                allEmployees = data; // Store fetched employees
+
+                renderEmployeeCards(allEmployees);
+                updateSummaryCards(allEmployees); // Update summary cards after fetching employees
+
+                if (allEmployees.length === 0) {
+                    noEmployeesFound.textContent = 'No employees found.';
+                    noEmployeesFound.classList.remove('hidden');
+                } else {
+                    noEmployeesFound.classList.add('hidden');
+                }
+
+            } catch (error) {
+                console.error("Error fetching employees:", error);
+                errorMessage.textContent = `Failed to load employee data: ${error.message}. Please ensure your backend server is running and accessible at ${API_BASE_URL}/employees.`;
+                errorMessage.classList.remove('hidden');
+            } finally {
+                loadingIndicator.classList.add('hidden');
+            }
+        }
+
+        /**
+         * Updates the content of the summary cards.
+         * @param {Array<Object>} employeeList - The list of employee objects.
+         */
+        function updateSummaryCards(employeeList) {
+            totalEmployeesElement.textContent = employeeList.length;
+
+            const departments = new Set(employeeList.map(emp => emp.department));
+            totalDepartmentsElement.textContent = departments.size;
+
+            const thirtyDaysAgo = new Date();
+            thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+
+            const newHiresCount = employeeList.filter(emp => {
+                const joiningDate = new Date(emp.joiningDate);
+                return joiningDate >= thirtyDaysAgo;
+            }).length;
+            newHiresElement.textContent = newHiresCount;
+        }
+
+
+        /**
+         * Adds a new employee via the backend API.
+         * @param {Object} employeeData - The data for the new employee.
+         */
+        async function addEmployee(employeeData) {
+            try {
+                const response = await fetch(`${API_BASE_URL}/employees`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(employeeData)
+                });
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(`HTTP error! Status: ${response.status}, Details: ${errorData.details || response.statusText}`);
+                }
+                const newEmployee = await response.json();
+                console.log('Employee added:', newEmployee);
+                showCustomModal('Employee added successfully!');
+                fetchEmployees(); // Re-fetch all employees to update the list and summaries
+            } catch (error) {
+                console.error("Error adding employee:", error);
+                showCustomModal(`Failed to add employee: ${error.message}`);
+            }
+        }
+
+        /**
+         * Updates an employee via the backend API.
+         * @param {string} employeeId - The ID of the employee to update.
+         * @param {Object} updatedData - The updated data for the employee.
+         */
+        async function updateEmployee(employeeId, updatedData) {
+            try {
+                const response = await fetch(`${API_BASE_URL}/employees/${employeeId}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(updatedData)
+                });
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(`HTTP error! Status: ${response.status}, Details: ${errorData.details || response.statusText}`);
+                }
+                const updatedEmployee = await response.json();
+                console.log('Employee updated:', updatedEmployee);
+                showCustomModal('Employee updated successfully!');
+                fetchEmployees(); // Re-fetch all employees to update the list and summaries
+            } catch (error) {
+                console.error("Error updating employee:", error);
+                showCustomModal(`Failed to update employee: ${error.message}`);
+            }
+        }
+
+        /**
+         * Deletes an employee via the backend API.
+         * @param {string} employeeId - The ID of the employee to delete.
+         */
+        async function deleteEmployee(employeeId) {
+            try {
+                const response = await fetch(`${API_BASE_URL}/employees/${employeeId}`, {
+                    method: 'DELETE'
+                });
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(`HTTP error! Status: ${response.status}, Details: ${errorData.details || response.statusText}`);
+                }
+                console.log('Employee deleted:', employeeId);
+                showCustomModal('Employee deleted successfully!');
+                fetchEmployees(); // Re-fetch all employees to update the list and summaries
+            } catch (error) {
+                console.error("Error deleting employee:", error);
+                showCustomModal(`Failed to delete employee: ${error.message}`);
+            }
+        }
+
+        /**
+         * Renders employee cards based on the provided list.
+         * @param {Array<Object>} employeeList - The list of employee objects to render.
+         */
+        function renderEmployeeCards(employeeList) {
+            employeeCardsContainer.innerHTML = ''; // Clear existing cards
+            if (employeeList.length === 0 && employeeSearch.value === '') {
+                // Only show "no employees" if search is empty and no employees exist
+                noEmployeesFound.textContent = 'No employees found.';
+                noEmployeesFound.classList.remove('hidden');
+                return;
+            } else if (employeeList.length === 0 && employeeSearch.value !== '') {
+                // Show "no results" if search is active but no matches
+                noEmployeesFound.textContent = 'No employees found matching your search criteria.';
+                noEmployeesFound.classList.remove('hidden');
+                return;
+            }
+            noEmployeesFound.classList.add('hidden'); // Hide "no employees found" message
+
+            employeeList.forEach(employee => {
+                // Determine card background color based on department
+                const cardColorClass = departmentColors[employee.department] || departmentColors['default'];
+                
+                // Ensure employee.photo has a fallback if not provided
+                const employeePhoto = employee.photo || `https://placehold.co/60x60/ADD8E6/FFFFFF?text=${employee.name.charAt(0).toUpperCase()}`;
+                const cardHtml = `
+                    <div class="rounded-xl shadow-lg p-6 card-hover ${cardColorClass} border">
+                        <div class="flex items-center mb-4">
+                            <img src="${employeePhoto}" alt="Employee Photo of ${employee.name}" class="w-16 h-16 rounded-full object-cover mr-4 border-2 border-blue-400">
+                            <div>
+                                <h3 class="text-xl font-semibold text-gray-900">${employee.name}</h3>
+                                <p class="text-blue-500 text-sm font-medium">${employee.user_id}</p>
+                            </div>
+                        </div>
+                        <p class="text-gray-700 mb-2"><i class="fas fa-envelope text-gray-500 mr-2"></i>${employee.email}</p>
+                        <p class="text-gray-700 mb-2"><i class="fas fa-briefcase text-gray-500 mr-2"></i>${employee.department} - ${employee.designation}</p>
+                        <p class="text-gray-700 mb-4"><i class="fas fa-calendar-alt text-gray-500 mr-2"></i>Joined: ${employee.joiningDate}</p>
+                        <div class="flex justify-end space-x-3">
+                            <a href="#" class="text-indigo-600 hover:text-indigo-900" title="View Details" onclick="showCustomModal('View details for ${employee.name} (ID: ${employee.id})')"><i class="fas fa-eye text-lg"></i></a>
+                            <a href="#" class="text-green-600 hover:text-green-900" title="Edit" onclick="showCustomModal('Edit functionality for ${employee.name} (ID: ${employee.id})')"><i class="fas fa-edit text-lg"></i></a>
+                            <a href="#" class="text-red-600 hover:text-red-900" title="Delete" onclick="showCustomModal('Delete functionality for ${employee.name} (ID: ${employee.id})')"><i class="fas fa-trash-alt text-lg"></i></a>
+                        </div>
+                    </div>
+                `;
+                employeeCardsContainer.insertAdjacentHTML('beforeend', cardHtml);
+            });
+        }
+
+        // --- Search Functionality ---
+        employeeSearch.addEventListener('keyup', (event) => {
+            const searchTerm = event.target.value.toLowerCase();
+            const filteredEmployees = allEmployees.filter(employee =>
+                employee.name.toLowerCase().includes(searchTerm) ||
+                employee.id.toLowerCase().includes(searchTerm) ||
+                employee.department.toLowerCase().includes(searchTerm) ||
+                employee.designation.toLowerCase().includes(searchTerm)
+            );
+            renderEmployeeCards(filteredEmployees);
+        });
+
+        // --- Profile Dropdown Logic ---
+        profileButton.addEventListener('click', (event) => {
+            event.stopPropagation(); // Prevent click from immediately closing it
+            profileDropdown.classList.toggle('show');
+        });
+
+        document.addEventListener('click', (event) => {
+            if (!profileDropdown.contains(event.target) && !profileButton.contains(event.target)) {
+                profileDropdown.classList.remove('show');
+            }
+        });
+
+        // Initial fetch of employees when the page loads
+        document.addEventListener('DOMContentLoaded', fetchEmployees);
+    </script>
+</body>
+</html>

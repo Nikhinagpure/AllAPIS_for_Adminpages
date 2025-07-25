@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Wordlane Tech HR Attendance - View and manage attendance records.">
+    <meta name="keywords" content="HR, Attendance, Employee Attendance, Wordlane Tech">
+    <meta name="author" content="Wordlane Tech">
+    <title>Wordlane Tech - HR Attendance</title>
+
+    <!-- Google Fonts: Roboto for professional typography -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" xintegrity="sha512-Fo3rlrZj/k7ujTnHg4CGR2D7kSs0V4LLanw2qksYuRlEzO+tcaEPQogQ0KaoGN26/zrn20ImR1DfuLWnOo7aBA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <style>
+        /* Base font application */
+        body {
+            font-family: 'Roboto', sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        /* Custom gradient for header */
+        .header-gradient {
+            background: linear-gradient(to right, #87CEEB, #ADD8E6); /* Light sky blue to slightly lighter */
+        }
+
+        /* Profile dropdown styling */
+        .profile-dropdown {
+            position: absolute;
+            top: calc(100% + 10px); /* Position below the icon, with some spacing */
+            right: 0;
+            background-color: white;
+            border-radius: 0.75rem; /* rounded-xl */
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); /* shadow-lg */
+            z-index: 20; /* Above other content */
+            min-width: 150px;
+            overflow: hidden; /* Ensures rounded corners apply to children */
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: opacity 0.2s ease-out, transform 0.2s ease-out, visibility 0.2s ease-out;
+        }
+        .profile-dropdown.show {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+        .profile-dropdown a {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1rem; /* p-3 px-4 */
+            color: #4B5563; /* text-gray-700 */
+            font-weight: 500; /* font-medium */
+            transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out;
+        }
+        .profile-dropdown a:hover {
+            background-color: #F3F4F6; /* bg-gray-100 */
+            color: #1F2937; /* text-gray-900 */
+        }
+        .profile-dropdown a i {
+            margin-right: 0.75rem; /* mr-3 */
+            font-size: 1.125rem; /* text-lg */
+        }
+
+        /* Responsive adjustments for smaller screens */
+        @media (max-width: 768px) {
+            .header-gradient {
+                padding: 1rem; /* Adjust padding for smaller screens */
+            }
+            .header-gradient h1 {
+                font-size: 1.75rem; /* Smaller font for company name */
+            }
+            .header-gradient img {
+                width: 35px;
+                height: 35px;
+            }
+            .nav-list {
+                flex-direction: column; /* Stack nav items vertically */
+                align-items: center;
+                space-x: 0; /* Remove horizontal spacing */
+            }
+            .nav-list li {
+                margin-bottom: 0.75rem; /* Add vertical spacing */
+            }
+            .nav-list li:last-child {
+                margin-bottom: 0;
+            }
+            .page-title {
+                font-size: 2.5rem; /* Adjust title size */
+            }
+            .profile-dropdown {
+                right: 1rem; /* Adjust position for mobile */
+                min-width: unset; /* Allow width to adjust */
+                width: calc(100% - 2rem); /* Take full width minus padding */
+            }
+        }
+
+        /* Table specific styles */
+        .attendance-table-container {
+            background-color: white;
+            border-radius: 0.75rem; /* rounded-xl */
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); /* shadow-lg */
+            overflow-x: auto; /* Enable horizontal scrolling on small screens */
+        }
+        .attendance-table th, .attendance-table td {
+            padding: 1rem 1.5rem; /* px-6 py-4 */
+            text-align: left;
+            white-space: nowrap; /* Prevent text wrapping in table cells */
+        }
+        .attendance-table thead th {
+            font-size: 0.75rem; /* text-xs */
+            font-weight: 500; /* font-medium */
+            color: #6B7280; /* text-gray-500 */
+            text-transform: uppercase;
+            letter-spacing: 0.05em; /* tracking-wider */
+            background-color: #F9FAFB; /* bg-gray-100 */
+        }
+        .attendance-table tbody td {
+            font-size: 0.875rem; /* text-sm */
+            color: #4B5563; /* text-gray-700 */
+            border-bottom: 1px solid #E5E7EB; /* divide-gray-200 */
+        }
+        .attendance-table tbody tr:last-child td {
+            border-bottom: none;
+        }
+        .status-present {
+            color: #059669; /* green-600 */
+            font-weight: 600;
+        }
+        .status-on-leave {
+            color: #F59E0B; /* yellow-600 */
+            font-weight: 600;
+        }
+        .status-absent {
+            color: #EF4444; /* red-600 */
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen flex flex-col">
+
+    <!-- Header Section -->
+    <header class="header-gradient p-5 shadow-lg rounded-b-xl flex flex-col sm:flex-row items-center justify-between sticky top-0 z-10">
+        <!-- Left side: Logo and Company Name (clickable to dashboard) -->
+        <a href="hr_dashboard.html" class="flex items-center mb-4 sm:mb-0 text-gray-800 no-underline hover:opacity-80 transition duration-200">
+            <!-- Company Logo -->
+            <img src="http://googleusercontent.com/file_content/3" alt="Wordlane Tech Logo" class="mr-4 w-16 h-16 object-contain">
+            <h1 class="text-3xl font-bold tracking-wide">Wordlane Tech</h1>
+        </a>
+
+        <!-- Right side: Profile icon with dropdown -->
+        <div class="relative">
+            <button id="profileButton" class="bg-gray-700 hover:bg-gray-900 text-white w-12 h-12 rounded-full flex items-center justify-center shadow-lg transition duration-300 ease-in-out transform hover:scale-110 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-opacity-50" aria-label="User Profile Menu">
+                <!-- Profile picture placeholder -->
+                <img src="https://placehold.co/48x48/CCCCCC/FFFFFF?text=HR" alt="User Profile" class="w-full h-full rounded-full object-cover">
+            </button>
+
+            <!-- Profile Dropdown Menu -->
+            <div id="profileDropdown" class="profile-dropdown">
+                <a href="hr_profile.html" class="flex items-center">
+                    <i class="fas fa-user mr-3" aria-hidden="true"></i>
+                    My Profile
+                </a>
+                <a href="../../login.html" class="flex items-center">
+                    <i class="fas fa-sign-out-alt mr-3" aria-hidden="true"></i>
+                    Log Out
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Navigation Bar for HR Dashboard -->
+    <nav class="bg-gray-800 p-4 shadow-md">
+        <ul class="flex flex-wrap justify-center space-x-4 sm:space-x-10 nav-list">
+            <li><a href="hr_dashboard.html" class="text-white text-lg font-medium hover:text-sky-300 transition duration-300 ease-in-out p-2 rounded-md hover:bg-gray-700">Dashboard</a></li>
+            <li><a href="hr_employees.html" class="text-white text-lg font-medium hover:text-sky-300 transition duration-300 ease-in-out p-2 rounded-md hover:bg-gray-700">Employees</a></li>
+            <li><a href="hr_attendance.html" class="text-sky-300 text-lg font-medium transition duration-300 ease-in-out p-2 rounded-md bg-gray-700">Attendance</a></li>
+            <li><a href="hr_leaves.html" class="text-white text-lg font-medium hover:text-sky-300 transition duration-300 ease-in-out p-2 rounded-md hover:bg-gray-700">Leaves</a></li>
+            <li><a href="hr_departments.html" class="text-white text-lg font-medium hover:text-sky-300 transition duration-300 ease-in-out p-2 rounded-md hover:bg-gray-700">Departments</a></li>
+            <li><a href="hr_documents.html" class="text-white text-lg font-medium hover:text-sky-300 transition duration-300 ease-in-out p-2 rounded-md hover:bg-gray-700">Documents</a></li>
+            <li><a href="hr_reports.html" class="text-white text-lg font-medium hover:text-sky-300 transition duration-300 ease-in-out p-2 rounded-md hover:bg-gray-700">Reports</a></li>
+        </ul>
+    </nav>
+
+    <!-- Main Content Area - HR Attendance Records -->
+    <main class="flex-grow p-8 bg-gray-50">
+        <div class="max-w-7xl mx-auto">
+            <div class="flex justify-between items-center mb-8">
+                <h2 class="text-3xl font-extrabold text-gray-900 page-title">Attendance Records</h2>
+                <div class="flex space-x-4">
+                    <a href="add_attendance.html" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg shadow-md transition duration-300 ease-in-out flex items-center">
+                        <i class="fas fa-plus mr-2"></i> Add Check-in
+                    </a>
+                    <a href="add_checkout.html" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-lg shadow-md transition duration-300 ease-in-out flex items-center">
+                        <i class="fas fa-sign-out-alt mr-2"></i> Add Check-out
+                    </a>
+                </div>
+            </div>
+
+            <!-- Attendance Table -->
+            <div class="attendance-table-container">
+                <table class="min-w-full attendance-table divide-y divide-gray-200">
+                    <thead class="bg-gray-100">
+                        <tr>
+                            <th scope="col">Employee ID</th>
+                            <th scope="col">Employee Name</th>
+                            <th scope="col">Date</th>
+                            <th scope="col">Status</th>
+                            <th scope="col">Check-in Time</th>
+                            <th scope="col">Check-out Time</th>
+                            <th scope="col" class="text-center">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200">
+                        <!-- Example Attendance Row 1 -->
+                        <tr>
+                            <td>EMP001</td>
+                            <td>John Doe</td>
+                            <td>2025-07-22</td>
+                            <td class="status-present">Present</td>
+                            <td>09:00 AM</td>
+                            <td>05:00 PM</td>
+                            <td class="text-center">
+                                <a href="#" class="text-green-600 hover:text-green-900 mr-4" title="Edit"><i class="fas fa-edit"></i></a>
+                                <a href="#" class="text-red-600 hover:text-red-900" title="Delete"><i class="fas fa-trash-alt"></i></a>
+                            </td>
+                        </tr>
+                        <!-- Example Attendance Row 2 -->
+                        <tr>
+                            <td>EMP002</td>
+                            <td>Jane Smith</td>
+                            <td>2025-07-22</td>
+                            <td class="status-on-leave">On Leave</td>
+                            <td>-</td>
+                            <td>-</td>
+                            <td class="text-center">
+                                <a href="#" class="text-green-600 hover:text-green-900 mr-4" title="Edit"><i class="fas fa-edit"></i></a>
+                                <a href="#" class="text-red-600 hover:text-red-900" title="Delete"><i class="fas fa-trash-alt"></i></a>
+                            </td>
+                        </tr>
+                        <!-- Example Attendance Row 3 -->
+                        <tr>
+                            <td>EMP003</td>
+                            <td>Robert Brown</td>
+                            <td>2025-07-22</td>
+                            <td class="status-absent">Absent</td>
+                            <td>-</td>
+                            <td>-</td>
+                            <td class="text-center">
+                                <a href="#" class="text-green-600 hover:text-green-900 mr-4" title="Edit"><i class="fas fa-edit"></i></a>
+                                <a href="#" class="text-red-600 hover:text-red-900" title="Delete"><i class="fas fa-trash-alt"></i></a>
+                            </td>
+                        </tr>
+                        <!-- More rows can be added here dynamically -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer Section -->
+    <footer class="bg-gray-800 text-white p-4 text-center mt-auto rounded-t-lg">
+        <p class="text-sm">&copy; 2025 Wordlane Tech. All rights reserved.</p>
+    </footer>
+
+    <script>
+        const profileButton = document.getElementById('profileButton');
+        const profileDropdown = document.getElementById('profileDropdown');
+
+        // Toggle dropdown visibility
+        profileButton.addEventListener('click', (event) => {
+            event.stopPropagation(); // Prevent click from immediately closing it
+            profileDropdown.classList.toggle('show');
+        });
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', (event) => {
+            if (!profileDropdown.contains(event.target) && !profileButton.contains(event.target)) {
+                profileDropdown.classList.remove('show');
+            }
+        });
+
+        // Placeholder for future dynamic data fetching
+        document.addEventListener('DOMContentLoaded', () => {
+            // async function fetchAttendanceData() {
+            //     try {
+            //         const response = await fetch('/api/hr/attendance'); // Your API endpoint
+            //         if (!response.ok) {
+            //             throw new Error(`HTTP error! status: ${response.status}`);
+            //         }
+            //         const attendanceRecords = await response.json();
+            //
+            //         const tbody = document.querySelector('.attendance-table tbody');
+            //         tbody.innerHTML = ''; // Clear existing rows
+            //
+            //         attendanceRecords.forEach(record => {
+            //             const row = `
+            //                 <tr>
+            //                     <td>${record.employeeId}</td>
+            //                     <td>${record.employeeName}</td>
+            //                     <td>${record.date}</td>
+            //                     <td class="status-${record.status.toLowerCase().replace(/\s/g, '-')}">${record.status}</td>
+            //                     <td>${record.checkInTime || '-'}</td>
+            //                     <td>${record.checkOutTime || '-'}</td>
+            //                     <td class="text-center">
+            //                         <a href="#" class="text-green-600 hover:text-green-900 mr-4" title="Edit"><i class="fas fa-edit"></i></a>
+            //                         <a href="#" class="text-red-600 hover:text-red-900" title="Delete"><i class="fas fa-trash-alt"></i></a>
+            //                     </td>
+            //                 </tr>
+            //             `;
+            //             tbody.insertAdjacentHTML('beforeend', row);
+            //         });
+            //
+            //     } catch (error) {
+            //         console.error('Error fetching HR attendance data:', error);
+            //         // Display a user-friendly message on the page
+            //     }
+            // }
+            // fetchAttendanceData();
+        });
+    </script>
+</body>
+</html>

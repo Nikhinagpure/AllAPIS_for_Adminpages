@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Wordlane Tech Employee Management System - Manage project details.">
+    <meta name="keywords" content="Employee Management, HR, Projects, Wordlane Tech">
+    <meta name="author" content="Wordlane Tech">
+    <title>Wordlane Tech - Projects</title>
+
+    <!-- Google Fonts: Roboto for professional typography -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" xintegrity="sha512-Fo3rlrZj/k7ujTnHg4CGR2D7kSs0V4LLanw2qksYuRlEzO+tcaEPQogQ0KaoGN26/zrn20ImR1DfuLWnOo7aBA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <style>
+        /* Base font application */
+        body {
+            font-family: 'Roboto', sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        /* Custom gradient for header */
+        .header-gradient {
+            background: linear-gradient(to right, #87CEEB, #ADD8E6); /* Light sky blue to slightly lighter */
+        }
+
+        /* Profile dropdown styling */
+        .profile-dropdown {
+            position: absolute;
+            top: calc(100% + 10px); /* Position below the icon, with some spacing */
+            right: 0;
+            background-color: white;
+            border-radius: 0.75rem; /* rounded-xl */
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); /* shadow-lg */
+            z-index: 20; /* Above other content */
+            min-width: 150px;
+            overflow: hidden; /* Ensures rounded corners apply to children */
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: opacity 0.2s ease-out, transform 0.2s ease-out, visibility 0.2s ease-out;
+        }
+        .profile-dropdown.show {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+        .profile-dropdown a {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1rem; /* p-3 px-4 */
+            color: #4B5563; /* text-gray-700 */
+            font-weight: 500; /* font-medium */
+            transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out;
+        }
+        .profile-dropdown a:hover {
+            background-color: #F3F4F6; /* bg-gray-100 */
+            color: #1F2937; /* text-gray-900 */
+        }
+        .profile-dropdown a i {
+            margin-right: 0.75rem; /* mr-3 */
+            font-size: 1.125rem; /* text-lg */
+        }
+
+        /* Responsive adjustments for smaller screens */
+        @media (max-width: 768px) {
+            .header-gradient {
+                padding: 1rem; /* Adjust padding for smaller screens */
+            }
+            .header-gradient h1 {
+                font-size: 1.75rem; /* Smaller font for company name */
+            }
+            .header-gradient img {
+                width: 35px;
+                height: 35px;
+            }
+            .nav-list {
+                flex-direction: column; /* Stack nav items vertically */
+                align-items: center;
+                space-x: 0; /* Remove horizontal spacing */
+            }
+            .nav-list li {
+                margin-bottom: 0.75rem; /* Add vertical spacing */
+            }
+            .nav-list li:last-child {
+                margin-bottom: 0;
+            }
+            .page-title {
+                font-size: 2.5rem; /* Adjust title size */
+            }
+            .profile-dropdown {
+                right: 1rem; /* Adjust position for mobile */
+                min-width: unset; /* Allow width to adjust */
+                width: calc(100% - 2rem); /* Take full width minus padding */
+            }
+        }
+
+        /* Card specific styles for better readability and spacing */
+        .project-card {
+            border-radius: 0.75rem; /* rounded-xl */
+            padding: 1.5rem; /* p-6 */
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); /* shadow-md */
+            transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+        }
+        .project-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        .project-card h3 {
+            font-size: 1.5rem; /* text-2xl */
+            font-weight: 700; /* font-bold */
+            margin-bottom: 0.5rem; /* mb-2 */
+        }
+        .project-card p {
+            font-size: 0.95rem; /* text-md */
+            color: rgba(0, 0, 0, 0.7); /* darker text for readability */
+            margin-bottom: 0.5rem;
+        }
+        .project-card .status-badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px; /* full rounded */
+            font-size: 0.75rem; /* text-xs */
+            font-weight: 600; /* font-semibold */
+            margin-top: 0.75rem;
+        }
+        /* Specific status colors */
+        .status-in-progress {
+            background-color: #BFDBFE; /* blue-200 */
+            color: #1E40AF; /* blue-800 */
+        }
+        .status-completed {
+            background-color: #D1FAE5; /* green-200 */
+            color: #065F46; /* green-800 */
+        }
+        .status-pending {
+            background-color: #FEE2E2; /* red-200 */
+            color: #991B1B; /* red-800 */
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen flex flex-col">
+
+    <!-- Header Section -->
+    <header class="header-gradient p-5 shadow-lg rounded-b-xl flex flex-col sm:flex-row items-center justify-between sticky top-0 z-10">
+        <!-- Left side: Logo and Company Name (clickable to dashboard) -->
+        <a href="dashboard.html" class="flex items-center mb-4 sm:mb-0 text-gray-800 no-underline hover:opacity-80 transition duration-200">
+            <!-- Company Logo -->
+            <img src="http://googleusercontent.com/file_content/3" alt="Wordlane Tech Logo" class="mr-4 w-16 h-16 object-contain">
+            <h1 class="text-3xl font-bold tracking-wide">Wordlane Tech</h1>
+        </a>
+
+        <!-- Right side: Profile icon with dropdown -->
+        <div class="relative">
+            <button id="profileButton" class="bg-gray-700 hover:bg-gray-900 text-white w-12 h-12 rounded-full flex items-center justify-center shadow-lg transition duration-300 ease-in-out transform hover:scale-110 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-opacity-50" aria-label="User Profile Menu">
+                <!-- Profile picture placeholder -->
+                <img src="https://placehold.co/48x48/CCCCCC/FFFFFF?text=JP" alt="User Profile" class="w-full h-full rounded-full object-cover">
+            </button>
+
+            <!-- Profile Dropdown Menu -->
+            <div id="profileDropdown" class="profile-dropdown">
+                <a href="profile.html" class="flex items-center">
+                    <i class="fas fa-user mr-3" aria-hidden="true"></i>
+                    Details
+                </a>
+                <a href="../../login.html" class="flex items-center">
+                    <i class="fas fa-sign-out-alt mr-3" aria-hidden="true"></i>
+                    Log Out
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Navigation Bar for Employee Management System -->
+    <nav class="bg-gray-800 p-4 shadow-md">
+        <ul class="flex flex-wrap justify-center space-x-4 sm:space-x-10 nav-list">
+            <li><a href="dashboard.html" class="text-white text-lg font-medium hover:text-sky-300 transition duration-300 ease-in-out p-2 rounded-md hover:bg-gray-700">Dashboard</a></li>
+            <li><a href="employees.html" class="text-white text-lg font-medium hover:text-sky-300 transition duration-300 ease-in-out p-2 rounded-md hover:bg-gray-700">Employees</a></li>
+            <li><a href="departments.html" class="text-white text-lg font-medium hover:text-sky-300 transition duration-300 ease-in-out p-2 rounded-md hover:bg-gray-700">Departments</a></li>
+            <li><a href="attendance.html" class="text-white text-lg font-medium hover:text-sky-300 transition duration-300 ease-in-out p-2 rounded-md hover:bg-gray-700">Attendance</a></li>
+            <li><a href="projects.html" class="text-sky-300 text-lg font-medium transition duration-300 ease-in-out p-2 rounded-md bg-gray-700">Projects</a></li>
+            <li><a href="tasks.html" class="text-white text-lg font-medium hover:text-sky-300 transition duration-300 ease-in-out p-2 rounded-md hover:bg-gray-700">Tasks</a></li>
+            <li><a href="leaves.html" class="text-white text-lg font-medium hover:text-sky-300 transition duration-300 ease-in-out p-2 rounded-md hover:bg-gray-700">Leaves</a></li>
+            <li><a href="documents.html" class="text-white text-lg font-medium hover:text-sky-300 transition duration-300 ease-in-out p-2 rounded-md hover:bg-gray-700">Documents</a></li>
+            <li><a href="reports.html" class="text-white text-lg font-medium hover:text-sky-300 transition duration-300 ease-in-out p-2 rounded-md hover:bg-gray-700">Reports</a></li>
+        </ul>
+    </nav>
+
+    <!-- Main Content Area - Project List (Cards) -->
+    <main class="flex-grow p-8 bg-gray-50">
+        <div class="max-w-7xl mx-auto">
+            <div class="flex justify-between items-center mb-8">
+                <h2 class="text-3xl font-extrabold text-gray-900 page-title">Project List</h2>
+                <a href="add_project.html" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg shadow-md transition duration-300 ease-in-out flex items-center">
+                    <i class="fas fa-plus mr-2"></i> Add New Project
+                </a>
+            </div>
+
+            <!-- Project Cards Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Example Project Card 1 (In Progress) -->
+                <div class="project-card bg-blue-100 border border-blue-300 text-blue-900">
+                    <h3 class="text-blue-900">Website Redesign</h3>
+                    <p class="text-blue-800">**ID:** PROJ001</p>
+                    <p class="text-blue-800 text-sm mb-2">Complete overhaul of the company website for better UX and modern design.</p>
+                    <p class="text-blue-800 text-sm">**Start Date:** 2025-01-10</p>
+                    <p class="text-blue-800 text-sm">**End Date:** 2025-06-30</p>
+                    <span class="status-badge status-in-progress">In Progress</span>
+                    <div class="flex justify-end mt-4 space-x-3">
+                        <a href="#" class="text-blue-700 hover:text-blue-900" title="View Details"><i class="fas fa-eye text-lg"></i></a>
+                        <a href="#" class="text-blue-700 hover:text-blue-900" title="Edit"><i class="fas fa-edit text-lg"></i></a>
+                        <a href="#" class="text-blue-700 hover:text-blue-900" title="Delete"><i class="fas fa-trash-alt text-lg"></i></a>
+                    </div>
+                </div>
+
+                <!-- Example Project Card 2 (Completed) -->
+                <div class="project-card bg-green-100 border border-green-300 text-green-900">
+                    <h3 class="text-green-900">Mobile App Development</h3>
+                    <p class="text-green-800">**ID:** PROJ002</p>
+                    <p class="text-green-800 text-sm mb-2">Developing a new mobile application for customer engagement.</p>
+                    <p class="text-green-800 text-sm">**Start Date:** 2024-09-01</p>
+                    <p class="text-green-800 text-sm">**End Date:** 2025-03-15</p>
+                    <span class="status-badge status-completed">Completed</span>
+                    <div class="flex justify-end mt-4 space-x-3">
+                        <a href="#" class="text-green-700 hover:text-green-900" title="View Details"><i class="fas fa-eye text-lg"></i></a>
+                        <a href="#" class="text-green-700 hover:text-green-900" title="Edit"><i class="fas fa-edit text-lg"></i></a>
+                        <a href="#" class="text-green-700 hover:text-green-900" title="Delete"><i class="fas fa-trash-alt text-lg"></i></a>
+                    </div>
+                </div>
+
+                <!-- Example Project Card 3 (Pending) -->
+                <div class="project-card bg-yellow-100 border border-yellow-300 text-yellow-900">
+                    <h3 class="text-yellow-900">Internal Tool Automation</h3>
+                    <p class="text-yellow-800">**ID:** PROJ003</p>
+                    <p class="text-yellow-800 text-sm mb-2">Automating various internal processes to improve efficiency.</p>
+                    <p class="text-yellow-800 text-sm">**Start Date:** 2025-04-01</p>
+                    <p class="text-yellow-800 text-sm">**End Date:** 2025-09-30</p>
+                    <span class="status-badge status-pending">Pending</span>
+                    <div class="flex justify-end mt-4 space-x-3">
+                        <a href="#" class="text-yellow-700 hover:text-yellow-900" title="View Details"><i class="fas fa-eye text-lg"></i></a>
+                        <a href="#" class="text-yellow-700 hover:text-yellow-900" title="Edit"><i class="fas fa-edit text-lg"></i></a>
+                        <a href="#" class="text-yellow-700 hover:text-yellow-900" title="Delete"><i class="fas fa-trash-alt text-lg"></i></a>
+                    </div>
+                </div>
+
+                <!-- Example Project Card 4 (In Progress, different color) -->
+                <div class="project-card bg-purple-100 border border-purple-300 text-purple-900">
+                    <h3 class="text-purple-900">Cloud Migration Project</h3>
+                    <p class="text-purple-800">**ID:** PROJ004</p>
+                    <p class="text-purple-800 text-sm mb-2">Migrating on-premise infrastructure to a cloud-based solution.</p>
+                    <p class="text-purple-800 text-sm">**Start Date:** 2025-02-15</p>
+                    <p class="text-purple-800 text-sm">**End Date:** 2025-11-30</p>
+                    <span class="status-badge status-in-progress">In Progress</span>
+                    <div class="flex justify-end mt-4 space-x-3">
+                        <a href="#" class="text-purple-700 hover:text-purple-900" title="View Details"><i class="fas fa-eye text-lg"></i></a>
+                        <a href="#" class="text-purple-700 hover:text-purple-900" title="Edit"><i class="fas fa-edit text-lg"></i></a>
+                        <a href="#" class="text-purple-700 hover:text-purple-900" title="Delete"><i class="fas fa-trash-alt text-lg"></i></a>
+                    </div>
+                </div>
+
+                <!-- Example Project Card 5 (Completed, different color) -->
+                <div class="project-card bg-teal-100 border border-teal-300 text-teal-900">
+                    <h3 class="text-teal-900">CRM System Integration</h3>
+                    <p class="text-teal-800">**ID:** PROJ005</p>
+                    <p class="text-teal-800 text-sm mb-2">Integrating new CRM software with existing sales tools.</p>
+                    <p class="text-teal-800 text-sm">**Start Date:** 2024-11-01</p>
+                    <p class="text-teal-800 text-sm">**End Date:** 2025-02-28</p>
+                    <span class="status-badge status-completed">Completed</span>
+                    <div class="flex justify-end mt-4 space-x-3">
+                        <a href="#" class="text-teal-700 hover:text-teal-900" title="View Details"><i class="fas fa-eye text-lg"></i></a>
+                        <a href="#" class="text-teal-700 hover:text-teal-900" title="Edit"><i class="fas fa-edit text-lg"></i></a>
+                        <a href="#" class="text-teal-700 hover:text-teal-900" title="Delete"><i class="fas fa-trash-alt text-lg"></i></a>
+                    </div>
+                </div>
+
+                <!-- Example Project Card 6 (Pending, different color) -->
+                <div class="project-card bg-red-100 border border-red-300 text-red-900">
+                    <h3 class="text-red-900">Security Audit & Upgrade</h3>
+                    <p class="text-red-800">**ID:** PROJ006</p>
+                    <p class="text-red-800 text-sm mb-2">Comprehensive security audit and system upgrades.</p>
+                    <p class="text-red-800 text-sm">**Start Date:** 2025-07-01</p>
+                    <p class="text-red-800 text-sm">**End Date:** 2025-10-31</p>
+                    <span class="status-badge status-pending">Pending</span>
+                    <div class="flex justify-end mt-4 space-x-3">
+                        <a href="#" class="text-red-700 hover:text-red-900" title="View Details"><i class="fas fa-eye text-lg"></i></a>
+                        <a href="#" class="text-red-700 hover:text-red-900" title="Edit"><i class="fas fa-edit text-lg"></i></a>
+                        <a href="#" class="text-red-700 hover:text-red-900" title="Delete"><i class="fas fa-trash-alt text-lg"></i></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer Section -->
+    <footer class="bg-gray-800 text-white p-4 text-center mt-auto rounded-t-lg">
+        <p class="text-sm">&copy; 2025 Wordlane Tech. All rights reserved.</p>
+    </footer>
+
+    <script>
+        const profileButton = document.getElementById('profileButton');
+        const profileDropdown = document.getElementById('profileDropdown');
+
+        // Toggle dropdown visibility
+        profileButton.addEventListener('click', (event) => {
+            event.stopPropagation(); // Prevent click from immediately closing it
+            profileDropdown.classList.toggle('show');
+        });
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', (event) => {
+            if (!profileDropdown.contains(event.target) && !profileButton.contains(event.target)) {
+                profileDropdown.classList.remove('show');
+            }
+        });
+
+        // Placeholder for future dynamic data fetching
+        document.addEventListener('DOMContentLoaded', () => {
+            // async function fetchProjectsData() {
+            //     try {
+            //         const response = await fetch('/api/projects'); // Your API endpoint
+            //         if (!response.ok) {
+            //             throw new Error(`HTTP error! status: ${response.status}`);
+            //         }
+            //         const projects = await response.json();
+            //
+            //         const projectsGrid = document.querySelector('.grid');
+            //         projectsGrid.innerHTML = ''; // Clear existing cards
+            //
+            //         projects.forEach(project => {
+            //             const statusClass = project.status.toLowerCase().replace(/\s/g, '-'); // e.g., 'in-progress', 'completed'
+            //             const cardColorClass = getProjectCardColor(project.status); // Function to determine color based on status
+            //
+            //             const card = `
+            //                 <div class="project-card ${cardColorClass}">
+            //                     <h3 class="${cardColorClass.replace('-100', '-900').replace('-200', '-900')}">${project.name}</h3>
+            //                     <p class="${cardColorClass.replace('-100', '-800').replace('-200', '-800')}">**ID:** ${project.id}</p>
+            //                     <p class="${cardColorClass.replace('-100', '-800').replace('-200', '-800')} text-sm mb-2">${project.description}</p>
+            //                     <p class="${cardColorClass.replace('-100', '-800').replace('-200', '-800')} text-sm">**Start Date:** ${project.startDate}</p>
+            //                     <p class="${cardColorClass.replace('-100', '-800').replace('-200', '-800')} text-sm">**End Date:** ${project.endDate}</p>
+            //                     <span class="status-badge status-${statusClass}">${project.status}</span>
+            //                     <div class="flex justify-end mt-4 space-x-3">
+            //                         <a href="#" class="${cardColorClass.replace('-100', '-700').replace('-200', '-700')} hover:${cardColorClass.replace('-100', '-900').replace('-200', '-900')}" title="View Details"><i class="fas fa-eye text-lg"></i></a>
+            //                         <a href="#" class="${cardColorClass.replace('-100', '-700').replace('-200', '-700')} hover:${cardColorClass.replace('-100', '-900').replace('-200', '-900')}" title="Edit"><i class="fas fa-edit text-lg"></i></a>
+            //                         <a href="#" class="${cardColorClass.replace('-100', '-700').replace('-200', '-700')} hover:${cardColorClass.replace('-100', '-900').replace('-200', '-900')}" title="Delete"><i class="fas fa-trash-alt text-lg"></i></a>
+            //                     </div>
+            //                 </div>
+            //             `;
+            //             projectsGrid.insertAdjacentHTML('beforeend', card);
+            //         });
+            //
+            //     } catch (error) {
+            //         console.error('Error fetching projects data:', error);
+            //         // Display a user-friendly message on the page
+            //     }
+            // }
+            //
+            // // Helper function to get card color based on project status
+            // function getProjectCardColor(status) {
+            //     switch (status.toLowerCase()) {
+            //         case 'in progress':
+            //             return 'bg-blue-100 border-blue-300 text-blue-900';
+            //         case 'completed':
+            //             return 'bg-green-100 border-green-300 text-green-900';
+            //         case 'pending':
+            //             return 'bg-yellow-100 border-yellow-300 text-yellow-900';
+            //         default:
+            //             return 'bg-gray-100 border-gray-300 text-gray-900';
+            //     }
+            // }
+            //
+            // fetchProjectsData();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Wordlane Tech Employee Management System Dashboard - Overview of employees, departments, tasks, and attendance.">
+    <meta name="keywords" content="Employee Management, HR, Dashboard, Wordlane Tech, Attendance, Tasks, Projects">
+    <meta name="author" content="Wordlane Tech">
+    <title>Wordlane Tech - Employee Management System Dashboard</title>
+
+    <!-- Google Fonts: Roboto for professional typography -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" xintegrity="sha512-Fo3rlrZj/k7ujTnHg4CGR2D7kSs0V4LLanw2qksYuRlEzO+tcaEPQogQ0KaoGN26/zrn20ImR1DfuLWnOo7aBA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <style>
+        /* Base font application */
+        body {
+            font-family: 'Roboto', sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        /* Custom gradient for header */
+        .header-gradient {
+            background: linear-gradient(to right, #87CEEB, #ADD8E6); /* Light sky blue to slightly lighter */
+        }
+
+        /* Card hover effect for interactivity */
+        .card-hover {
+            transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+        }
+        .card-hover:hover {
+            transform: translateY(-8px); /* More pronounced lift */
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2); /* Stronger shadow */
+        }
+
+        /* Profile dropdown styling */
+        .profile-dropdown {
+            position: absolute;
+            top: calc(100% + 10px); /* Position below the icon, with some spacing */
+            right: 0;
+            background-color: white;
+            border-radius: 0.75rem; /* rounded-xl */
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); /* shadow-lg */
+            z-index: 20; /* Above other content */
+            min-width: 150px;
+            overflow: hidden; /* Ensures rounded corners apply to children */
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: opacity 0.2s ease-out, transform 0.2s ease-out, visibility 0.2s ease-out;
+        }
+        .profile-dropdown.show {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+        .profile-dropdown a {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1rem; /* p-3 px-4 */
+            color: #4B5563; /* text-gray-700 */
+            font-weight: 500; /* font-medium */
+            transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out;
+        }
+        .profile-dropdown a:hover {
+            background-color: #F3F4F6; /* bg-gray-100 */
+            color: #1F2937; /* text-gray-900 */
+        }
+        .profile-dropdown a i {
+            margin-right: 0.75rem; /* mr-3 */
+            font-size: 1.125rem; /* text-lg */
+        }
+
+        /* Responsive adjustments for smaller screens */
+        @media (max-width: 768px) {
+            .header-gradient {
+                padding: 1rem; /* Adjust padding for smaller screens */
+            }
+            .header-gradient h1 {
+                font-size: 1.75rem; /* Smaller font for company name */
+            }
+            .header-gradient img {
+                width: 35px;
+                height: 35px;
+            }
+            .nav-list {
+                flex-direction: column; /* Stack nav items vertically */
+                align-items: center;
+            }
+            .nav-list li {
+                margin-bottom: 0.75rem; /* Add vertical spacing */
+            }
+            .nav-list li:last-child {
+                margin-bottom: 0;
+            }
+            .page-title {
+                font-size: 2.5rem; /* Adjust title size */
+            }
+            .profile-dropdown {
+                right: 1rem; /* Adjust position for mobile */
+                min-width: unset; /* Allow width to adjust */
+                width: calc(100% - 2rem); /* Take full width minus padding */
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen flex flex-col">
+
+    <!-- Header Section -->
+    <header class="header-gradient p-5 shadow-lg rounded-b-xl flex flex-col sm:flex-row items-center justify-between sticky top-0 z-10">
+        <!-- Left side: Logo and Company Name (clickable to dashboard) -->
+        <a href="dashboard.html" onclick="location.reload()" class="flex items-center mb-4 sm:mb-0 text-gray-800 no-underline hover:opacity-80 transition duration-200">
+            <!-- Company Logo - Using placeholder for now, update with your actual logo path -->
+            <img src="/ems-frontend/photos/logo.png" alt="Wordlane Tech Logo" class="mr-4 w-16 h-16 object-contain">
+            <h1 class="text-3xl font-bold tracking-wide">Wordlane Tech</h1>
+        </a>
+
+        <!-- Right side: Profile icon with dropdown -->
+        <div class="relative">
+            <button id="profileButton" class="bg-gray-700 hover:bg-gray-900 text-white w-12 h-12 rounded-full flex items-center justify-center shadow-lg transition duration-300 ease-in-out transform hover:scale-110 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-opacity-50" aria-label="User Profile Menu">
+                <!-- Profile picture placeholder -->
+                <img src="https://placehold.co/48x48/CCCCCC/FFFFFF?text=JP" alt="User Profile" class="w-full h-full rounded-full object-cover">
+            </button>
+
+            <!-- Profile Dropdown Menu -->
+            <div id="profileDropdown" class="profile-dropdown">
+                <a href="profile.html" class="flex items-center">
+                    <i class="fas fa-user mr-3" aria-hidden="true"></i>
+                    Details
+                </a>
+                <a href="#" id="logoutButton" class="flex items-center">
+                    <i class="fas fa-sign-out-alt mr-3" aria-hidden="true"></i>
+                    Log Out
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Navigation Bar for Employee Management System -->
+    <nav class="bg-gray-800 p-4 shadow-md">
+        <ul class="flex flex-wrap justify-center space-x-4 sm:space-x-10 nav-list">
+            <li><a href="dashboard.html" class="text-sky-300 text-lg font-medium transition duration-300 ease-in-out p-2 rounded-md bg-gray-700">Dashboard</a></li>
+            <li><a href="../admin/employee.html" class="text-white text-lg font-medium hover:text-sky-300 transition duration-300 ease-in-out p-2 rounded-md hover:bg-gray-700">Employees</a></li>
+            <li><a href="departments.html" class="text-white text-lg font-medium hover:text-sky-300 transition duration-300 ease-in-out p-2 rounded-md hover:bg-gray-700">Departments</a></li>
+            <li><a href="attendance.html" class="text-white text-lg font-medium hover:text-sky-300 transition duration-300 ease-in-out p-2 rounded-md hover:bg-gray-700">Attendance</a></li>
+            <li><a href="projects.html" class="text-white text-lg font-medium hover:text-sky-300 transition duration-300 ease-in-out p-2 rounded-md hover:bg-gray-700">Projects</a></li>
+            <li><a href="tasks.html" class="text-white text-lg font-medium hover:text-sky-300 transition duration-300 ease-in-out p-2 rounded-md hover:bg-gray-700">Tasks</a></li>
+            <li><a href="leaves.html" class="text-white text-lg font-medium hover:text-sky-300 transition duration-300 ease-in-out p-2 rounded-md hover:bg-gray-700">Leaves</a></li>
+            <li><a href="documents.html" class="text-white text-lg font-medium hover:text-sky-300 transition duration-300 ease-in-out p-2 rounded-md hover:bg-gray-700">Documents</a></li>
+            <li><a href="reports.html" class="text-white text-lg font-medium hover:text-sky-300 transition duration-300 ease-in-out p-2 rounded-md hover:bg-gray-700">Reports</a></li>
+        </ul>
+    </nav>
+
+    <!-- Main Content Area - Dashboard Summary -->
+    <main class="flex-grow p-8 bg-gray-50">
+        <h2 class="text-3xl font-extrabold text-gray-900 mb-10 text-center dashboard-title" id="dashboardMainTitle">Dashboard Overview</h2>
+        <p class="text-center text-gray-600 mb-8" id="dashboardMessage"></p>
+
+
+        <!-- Key Metrics Section -->
+        <section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto mb-12 main-content-grid">
+            <!-- Total Employees Card -->
+            <div class="bg-blue-50 border border-blue-200 p-5 rounded-xl shadow-lg flex flex-col items-center justify-center text-center transition duration-300 ease-in-out card-hover" role="region" aria-labelledby="total-employees-heading">
+                <i class="fas fa-users text-5xl text-blue-600 mb-3 opacity-80" aria-hidden="true"></i>
+                <h3 id="total-employees-heading" class="text-xl font-bold text-blue-800 mb-1 card-title">Total Employees</h3>
+                <p class="text-4xl font-extrabold text-blue-900 card-value" id="totalEmployeesValue">--</p>
+                <p class="text-gray-600 text-sm mt-1">Currently active in the system.</p>
+            </div>
+
+            <!-- Total Departments Card -->
+            <div class="bg-green-50 border border-green-200 p-5 rounded-xl shadow-lg flex flex-col items-center justify-center text-center transition duration-300 ease-in-out card-hover" role="region" aria-labelledby="total-departments-heading">
+                <i class="fas fa-building text-5xl text-green-600 mb-3 opacity-80" aria-hidden="true"></i>
+                <h3 id="total-departments-heading" class="text-xl font-bold text-green-800 mb-1 card-title">Total Departments</h3>
+                <p class="text-4xl font-extrabold text-green-900 card-value" id="totalDepartmentsValue">--</p>
+                <p class="text-gray-600 text-sm mt-1">Organized business units.</p>
+            </div>
+
+            <!-- Total Designations Card -->
+            <div class="bg-purple-50 border border-purple-200 p-5 rounded-xl shadow-lg flex flex-col items-center justify-center text-center transition duration-300 ease-in-out card-hover" role="region" aria-labelledby="total-designations-heading">
+                <i class="fas fa-briefcase text-5xl text-purple-600 mb-3 opacity-80" aria-hidden="true"></i>
+                <h3 id="total-designations-heading" class="text-xl font-bold text-purple-800 mb-1 card-title">Total Designations</h3>
+                <p class="text-4xl font-extrabold text-purple-900 card-value" id="totalDesignationsValue">--</p>
+                <p class="text-gray-600 text-sm mt-1">Unique job roles defined.</p>
+            </div>
+
+            <!-- Total Projects Card -->
+            <div class="bg-yellow-50 border border-yellow-200 p-5 rounded-xl shadow-lg flex flex-col items-center justify-center text-center transition duration-300 ease-in-out card-hover" role="region" aria-labelledby="total-projects-heading">
+                <i class="fas fa-project-diagram text-5xl text-yellow-600 mb-3 opacity-80" aria-hidden="true"></i>
+                <h3 id="total-projects-heading" class="text-xl font-bold text-yellow-800 mb-1 card-title">Total Projects</h3>
+                <p class="text-4xl font-extrabold text-yellow-900 card-value" id="totalProjectsValue">--</p>
+                <p class="text-gray-600 text-sm mt-1">Ongoing and completed projects.</p>
+            </div>
+
+            <!-- Total Tasks Card -->
+            <div class="bg-red-50 border border-red-200 p-5 rounded-xl shadow-lg flex flex-col items-center justify-center text-center transition duration-300 ease-in-out card-hover" role="region" aria-labelledby="total-tasks-heading">
+                <i class="fas fa-tasks text-5xl text-red-600 mb-3 opacity-80" aria-hidden="true"></i>
+                <h3 id="total-tasks-heading" class="text-xl font-bold text-red-800 mb-1 card-title">Total Tasks</h3>
+                <p class="text-4xl font-extrabold text-red-900 card-value" id="totalTasksValue">--</p>
+                <p class="text-gray-600 text-sm mt-1">Assigned and pending tasks.</p>
+            </div>
+
+            <!-- Total Leaves Card -->
+            <div class="bg-indigo-50 border border-indigo-200 p-5 rounded-xl shadow-lg flex flex-col items-center justify-center text-center transition duration-300 ease-in-out card-hover" role="region" aria-labelledby="total-leaves-heading">
+                <div>
+                    <i class="fas fa-calendar-alt text-5xl text-indigo-600 mb-3 opacity-80" aria-hidden="true"></i>
+                    <h3 id="total-leaves-heading" class="text-xl font-bold text-indigo-800 mb-1 card-title">Total Leaves</h3>
+                    <p class="text-4xl font-extrabold text-indigo-900 card-value" id="totalLeavesValue">--</p>
+                    <p class="text-gray-600 text-sm mt-1">Approved leaves this month.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Attendance Overview Section -->
+        <section class="mb-12">
+            <h2 class="text-3xl font-extrabold text-gray-800 mb-8 text-center mt-12">Attendance Overview (Today)</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
+                <!-- Present Employees Card -->
+                <div class="bg-emerald-50 border border-emerald-200 p-5 rounded-xl shadow-lg flex flex-col items-center justify-center text-center transition duration-300 ease-in-out card-hover" role="region" aria-labelledby="present-employees-heading">
+                    <i class="fas fa-check-circle text-5xl text-emerald-600 mb-3 opacity-80" aria-hidden="true"></i>
+                    <h3 id="present-employees-heading" class="text-xl font-bold text-emerald-800 mb-1 card-title">Present</h3>
+                    <p class="text-4xl font-extrabold text-emerald-900 card-value" id="presentEmployeesValue">--</p>
+                    <p class="text-gray-600 text-sm mt-1">Employees present today.</p>
+                </div>
+
+                <!-- Absent Employees Card -->
+                <div class="bg-rose-50 border border-rose-200 p-5 rounded-xl shadow-lg flex flex-col items-center justify-center text-center transition duration-300 ease-in-out card-hover" role="region" aria-labelledby="absent-employees-heading">
+                    <i class="fas fa-times-circle text-5xl text-rose-600 mb-3 opacity-80" aria-hidden="true"></i>
+                    <h3 id="absent-employees-heading" class="text-xl font-bold text-rose-800 mb-1 card-title">Absent</h3>
+                    <p class="text-4xl font-extrabold text-rose-900 card-value" id="absentEmployeesValue">--</p>
+                    <p class="text-gray-600 text-sm mt-1">Employees absent today.</p>
+                </div>
+
+                <!-- On Leave Employees Card -->
+                <div class="bg-orange-50 border border-orange-200 p-5 rounded-xl shadow-lg flex flex-col items-center justify-center text-center transition duration-300 ease-in-out card-hover" role="region" aria-labelledby="on-leave-employees-heading">
+                    <i class="fas fa-plane-departure text-5xl text-orange-600 mb-3 opacity-80" aria-hidden="true"></i>
+                    <h3 id="on-leave-employees-heading" class="text-xl font-bold text-orange-800 mb-1 card-title">On Leave</h3>
+                    <p class="text-4xl font-extrabold text-orange-900 card-value" id="onLeaveEmployeesValue">--</p>
+                    <p class="text-gray-600 text-sm mt-1">Employees on leave today.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Task & Subtask Status Section -->
+        <section>
+            <h2 class="text-3xl font-extrabold text-gray-800 mb-8 text-center mt-12">Task & Subtask Status</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
+                <!-- Tasks In Progress Card -->
+                <div class="bg-sky-50 border border-sky-200 p-5 rounded-xl shadow-lg flex flex-col items-center justify-center text-center transition duration-300 ease-in-out card-hover" role="region" aria-labelledby="tasks-in-progress-heading">
+                    <i class="fas fa-spinner fa-spin text-5xl text-sky-600 mb-3 opacity-80" aria-hidden="true"></i>
+                    <h3 id="tasks-in-progress-heading" class="text-xl font-bold text-sky-800 mb-1 card-title">Tasks In Progress</h3>
+                    <p class="text-4xl font-extrabold text-sky-900 card-value" id="tasksInProgressValue">--</p>
+                    <p class="text-gray-600 text-sm mt-1">Currently being worked on.</p>
+                </div>
+
+                <!-- Tasks Completed Card -->
+                <div class="bg-lime-50 border border-lime-200 p-5 rounded-xl shadow-lg flex flex-col items-center justify-center text-center transition duration-300 ease-in-out card-hover" role="region" aria-labelledby="tasks-completed-heading">
+                    <i class="fas fa-check-double text-5xl text-lime-600 mb-3 opacity-80" aria-hidden="true"></i>
+                    <h3 id="tasks-completed-heading" class="text-xl font-bold text-lime-800 mb-1 card-title">Tasks Completed</h3>
+                    <p class="text-4xl font-extrabold text-lime-900 card-value" id="tasksCompletedValue">--</p>
+                    <p class="text-gray-600 text-sm mt-1">Successfully finished tasks.</p>
+                </div>
+
+                <!-- Tasks Pending Card -->
+                <div class="bg-fuchsia-50 border border-fuchsia-200 p-5 rounded-xl shadow-lg flex flex-col items-center justify-center text-center transition duration-300 ease-in-out card-hover" role="region" aria-labelledby="tasks-pending-heading">
+                    <i class="fas fa-hourglass-half text-5xl text-fuchsia-600 mb-3 opacity-80" aria-hidden="true"></i>
+                    <h3 id="tasks-pending-heading" class="text-xl font-bold text-fuchsia-800 mb-1 card-title">Tasks Pending</h3>
+                    <p class="text-4xl font-extrabold text-fuchsia-900 card-value" id="tasksPendingValue">--</p>
+                    <p class="text-gray-600 text-sm mt-1">Awaiting action or approval.</p>
+                </div>
+
+                <!-- Subtasks In Progress Card -->
+                <div class="bg-cyan-50 border border-cyan-200 p-5 rounded-xl shadow-lg flex flex-col items-center justify-center text-center transition duration-300 ease-in-out card-hover" role="region" aria-labelledby="subtasks-in-progress-heading">
+                    <i class="fas fa-sync-alt fa-spin text-5xl text-cyan-600 mb-3 opacity-80" aria-hidden="true"></i>
+                    <h3 id="subtasks-in-progress-heading" class="text-xl font-bold text-cyan-800 mb-1 card-title">Subtasks In Progress</h3>
+                    <p class="text-4xl font-extrabold text-cyan-900 card-value" id="subtasksInProgressValue">--</p>
+                    <p class="text-gray-600 text-sm mt-1">Sub-tasks currently active.</p>
+                </div>
+
+                <!-- Subtasks Completed Card -->
+                <div class="bg-teal-50 border border-teal-200 p-5 rounded-xl shadow-lg flex flex-col items-center justify-center text-center transition duration-300 ease-in-out card-hover" role="region" aria-labelledby="subtasks-completed-heading">
+                    <i class="fas fa-clipboard-check text-5xl text-teal-600 mb-3 opacity-80" aria-hidden="true"></i>
+                    <h3 id="subtasks-completed-heading" class="text-xl font-bold text-teal-800 mb-1 card-title">Subtasks Completed</h3>
+                    <p class="text-4xl font-extrabold text-teal-900 card-value" id="subtasksCompletedValue">--</p>
+                    <p class="text-gray-600 text-sm mt-1">Sub-tasks successfully finished.</p>
+                </div>
+
+                <!-- Subtasks Pending Card -->
+                <div class="bg-amber-50 border border-amber-200 p-5 rounded-xl shadow-lg flex flex-col items-center justify-center text-center transition duration-300 ease-in-out card-hover" role="region" aria-labelledby="subtasks-pending-heading">
+                    <i class="fas fa-clock text-5xl text-amber-600 mb-3 opacity-80" aria-hidden="true"></i>
+                    <h3 id="subtasks-pending-heading" class="text-xl font-bold text-amber-800 mb-1 card-title">Tasks Pending</h3>
+                    <p class="text-4xl font-extrabold text-amber-900 card-value" id="subtasksPendingValue">--</p>
+                    <p class="text-gray-600 text-sm mt-1">Sub-tasks awaiting completion.</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer Section -->
+    <footer class="bg-gray-800 text-white p-4 text-center mt-auto rounded-t-lg">
+        <p class="text-sm">&copy; 2025 Wordlane Tech. All rights reserved.</p>
+    </footer>
+
+    <script>
+        const profileButton = document.getElementById('profileButton');
+        const profileDropdown = document.getElementById('profileDropdown');
+        const logoutButton = document.getElementById('logoutButton');
+
+        // Toggle dropdown visibility
+        profileButton.addEventListener('click', (event) => {
+            event.stopPropagation();
+            profileDropdown.classList.toggle('show');
+        });
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', (event) => {
+            if (!profileDropdown.contains(event.target) && !profileButton.contains(event.target)) {
+                profileDropdown.classList.remove('show');
+            }
+        });
+
+        // Logout functionality
+        logoutButton.addEventListener('click', (event) => {
+            event.preventDefault();
+            localStorage.removeItem('token');
+            // Redirect to the actual login page at the root
+            window.location.href = window.location.origin + '/ems-frontend/login.html';
+        });
+
+        // Function to fetch and update dashboard data
+        document.addEventListener('DOMContentLoaded', async () => {
+  const token = localStorage.getItem('token');
+  if (!token) {
+    window.location.href = window.location.origin + '/ems-frontend/login.html';
+    return;
+  }
+
+  try {
+    const response = await fetch('http://localhost:3000/api/dashboard', {
+      method: 'GET',
+      headers: {
+        Authorization: 'Bearer ' + token,
+        'Content-Type': 'application/json',
+      },
+    });
+
+    const json = await response.json();
+
+    if (!response.ok || !json.success) {
+      if (response.status === 401 || response.status === 403) {
+        localStorage.removeItem('token');
+        window.location.href = window.location.origin + '../../login.html';
+        return;
+      }
+      alert(json.message || 'Failed to load dashboard');
+      return;
+    }
+
+    const { title, message, stats } = json.data;
+
+    document.getElementById('dashboardMainTitle').textContent = title || 'Dashboard Overview';
+    document.getElementById('dashboardMessage').textContent = message || '';
+
+    if (stats) {
+      if (stats.totalEmployees !== undefined) document.getElementById('totalEmployeesValue').textContent = stats.totalEmployees;
+      if (stats.totalDepartments !== undefined) document.getElementById('totalDepartmentsValue').textContent = stats.totalDepartments;
+      if (stats.totalDesignations !== undefined) document.getElementById('totalDesignationsValue').textContent = stats.totalDesignations;
+      if (stats.totalProjects !== undefined) document.getElementById('totalProjectsValue').textContent = stats.totalProjects;
+      if (stats.totalTasks !== undefined) document.getElementById('totalTasksValue').textContent = stats.totalTasks;
+      if (stats.totalLeaves !== undefined) document.getElementById('totalLeavesValue').textContent = stats.totalLeaves;
+
+      if (stats.presentEmployees !== undefined) document.getElementById('presentEmployeesValue').textContent = stats.presentEmployees;
+      if (stats.absentEmployees !== undefined) document.getElementById('absentEmployeesValue').textContent = stats.absentEmployees;
+      if (stats.onLeaveEmployees !== undefined) document.getElementById('onLeaveEmployeesValue').textContent = stats.onLeaveEmployees;
+
+      if (stats.tasksInProgress !== undefined) document.getElementById('tasksInProgressValue').textContent = stats.tasksInProgress;
+      if (stats.tasksCompleted !== undefined) document.getElementById('tasksCompletedValue').textContent = stats.tasksCompleted;
+      if (stats.tasksPending !== undefined) document.getElementById('tasksPendingValue').textContent = stats.tasksPending;
+
+      if (stats.subtasksInProgress !== undefined) document.getElementById('subtasksInProgressValue').textContent = stats.subtasksInProgress;
+      if (stats.subtasksCompleted !== undefined) document.getElementById('subtasksCompletedValue').textContent = stats.subtasksCompleted;
+      if (stats.subtasksPending !== undefined) document.getElementById('subtasksPendingValue').textContent = stats.subtasksPending;
+
+      if (stats.yourLeaveBalance !== undefined) {
+        console.log('Your Leave Balance:', stats.yourLeaveBalance);
+        // Optionally add this value somewhere on the page
+      }
+    }
+  } catch (error) {
+    console.error('Dashboard data fetch error:', error);
+    alert('Unable to load dashboard data');
+  }
+});    </script>
+</body>
+</html>

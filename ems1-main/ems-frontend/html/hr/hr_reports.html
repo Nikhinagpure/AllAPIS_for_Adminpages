@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Wordlane Tech HR Reports - Generate and view HR-related reports.">
+    <meta name="keywords" content="HR, Reports, Analytics, Employee Reports, Attendance Reports, Wordlane Tech">
+    <meta name="author" content="Wordlane Tech">
+    <title>Wordlane Tech - HR Reports</title>
+
+    <!-- Google Fonts: Roboto for professional typography -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" xintegrity="sha512-Fo3rlrZj/k7ujTnHg4CGR2D7kSs0V4LLanw2qksYuRlEzO+tcaEPQogQ0KaoGN26/zrn20ImR1DfuLWnOo7aBA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <style>
+        /* Base font application */
+        body {
+            font-family: 'Roboto', sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        /* Custom gradient for header */
+        .header-gradient {
+            background: linear-gradient(to right, #87CEEB, #ADD8E6); /* Light sky blue to slightly lighter */
+        }
+
+        /* Profile dropdown styling */
+        .profile-dropdown {
+            position: absolute;
+            top: calc(100% + 10px); /* Position below the icon, with some spacing */
+            right: 0;
+            background-color: white;
+            border-radius: 0.75rem; /* rounded-xl */
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); /* shadow-lg */
+            z-index: 20; /* Above other content */
+            min-width: 150px;
+            overflow: hidden; /* Ensures rounded corners apply to children */
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: opacity 0.2s ease-out, transform 0.2s ease-out, visibility 0.2s ease-out;
+        }
+        .profile-dropdown.show {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+        .profile-dropdown a {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1rem; /* p-3 px-4 */
+            color: #4B5563; /* text-gray-700 */
+            font-weight: 500; /* font-medium */
+            transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out;
+        }
+        .profile-dropdown a:hover {
+            background-color: #F3F4F6; /* bg-gray-100 */
+            color: #1F2937; /* text-gray-900 */
+        }
+        .profile-dropdown a i {
+            margin-right: 0.75rem; /* mr-3 */
+            font-size: 1.125rem; /* text-lg */
+        }
+
+        /* Responsive adjustments for smaller screens */
+        @media (max-width: 768px) {
+            .header-gradient {
+                padding: 1rem; /* Adjust padding for smaller screens */
+            }
+            .header-gradient h1 {
+                font-size: 1.75rem; /* Smaller font for company name */
+            }
+            .header-gradient img {
+                width: 35px;
+                height: 35px;
+            }
+            .nav-list {
+                flex-direction: column; /* Stack nav items vertically */
+                align-items: center;
+                space-x: 0; /* Remove horizontal spacing */
+            }
+            .nav-list li {
+                margin-bottom: 0.75rem; /* Add vertical spacing */
+            }
+            .nav-list li:last-child {
+                margin-bottom: 0;
+            }
+            .page-title {
+                font-size: 2.5rem; /* Adjust title size */
+            }
+            .profile-dropdown {
+                right: 1rem; /* Adjust position for mobile */
+                min-width: unset; /* Allow width to adjust */
+                width: calc(100% - 2rem); /* Take full width minus padding */
+            }
+        }
+
+        /* Card specific styles for better readability and spacing */
+        .report-card {
+            border-radius: 0.75rem; /* rounded-xl */
+            padding: 1.5rem; /* p-6 */
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); /* shadow-md */
+            transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+        }
+        .report-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        .report-card h3 {
+            font-size: 1.5rem; /* text-2xl */
+            font-weight: 700; /* font-bold */
+            margin-bottom: 0.5rem; /* mb-2 */
+        }
+        .report-card p {
+            font-size: 0.95rem; /* text-md */
+            color: rgba(0, 0, 0, 0.7); /* darker text for readability */
+            margin-bottom: 0.5rem;
+        }
+        .report-card .info-badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px; /* full rounded */
+            font-size: 0.75rem; /* text-xs */
+            font-weight: 600; /* font-semibold */
+            margin-top: 0.75rem;
+        }
+        /* Specific card colors */
+        .card-blue {
+            background-color: #DBEAFE; /* blue-100 */
+            border: 1px solid #93C5FD; /* blue-300 */
+            color: #1E40AF; /* blue-800 */
+        }
+        .card-green {
+            background-color: #D1FAE5; /* green-100 */
+            border: 1px solid #6EE7B7; /* green-300 */
+            color: #065F46; /* green-800 */
+        }
+        .card-yellow {
+            background-color: #FEF3C7; /* yellow-100 */
+            border: 1px solid #FCD34D; /* yellow-300 */
+            color: #92400E; /* yellow-800 */
+        }
+        .card-purple {
+            background-color: #EDE9FE; /* purple-100 */
+            border: 1px solid #C4B5FD; /* purple-300 */
+            color: #5B21B6; /* purple-800 */
+        }
+        .card-orange {
+            background-color: #FFEDD5; /* orange-100 */
+            border: 1px solid #FDBA74; /* orange-300 */
+            color: #9A3412; /* orange-800 */
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen flex flex-col">
+
+    <!-- Header Section -->
+    <header class="header-gradient p-5 shadow-lg rounded-b-xl flex flex-col sm:flex-row items-center justify-between sticky top-0 z-10">
+        <!-- Left side: Logo and Company Name (clickable to dashboard) -->
+        <a href="hr_dashboard.html" class="flex items-center mb-4 sm:mb-0 text-gray-800 no-underline hover:opacity-80 transition duration-200">
+            <!-- Company Logo -->
+            <img src="http://googleusercontent.com/file_content/3" alt="Wordlane Tech Logo" class="mr-4 w-16 h-16 object-contain">
+            <h1 class="text-3xl font-bold tracking-wide">Wordlane Tech</h1>
+        </a>
+
+        <!-- Right side: Profile icon with dropdown -->
+        <div class="relative">
+            <button id="profileButton" class="bg-gray-700 hover:bg-gray-900 text-white w-12 h-12 rounded-full flex items-center justify-center shadow-lg transition duration-300 ease-in-out transform hover:scale-110 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-opacity-50" aria-label="User Profile Menu">
+                <!-- Profile picture placeholder -->
+                <img src="https://placehold.co/48x48/CCCCCC/FFFFFF?text=HR" alt="User Profile" class="w-full h-full rounded-full object-cover">
+            </button>
+
+            <!-- Profile Dropdown Menu -->
+            <div id="profileDropdown" class="profile-dropdown">
+                <a href="hr_profile.html" class="flex items-center">
+                    <i class="fas fa-user mr-3" aria-hidden="true"></i>
+                    My Profile
+                </a>
+                <a href="../../login.html" class="flex items-center">
+                    <i class="fas fa-sign-out-alt mr-3" aria-hidden="true"></i>
+                    Log Out
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Navigation Bar for HR Dashboard -->
+    <nav class="bg-gray-800 p-4 shadow-md">
+        <ul class="flex flex-wrap justify-center space-x-4 sm:space-x-10 nav-list">
+            <li><a href="hr_dashboard.html" class="text-white text-lg font-medium hover:text-sky-300 transition duration-300 ease-in-out p-2 rounded-md hover:bg-gray-700">Dashboard</a></li>
+            <li><a href="hr_employees.html" class="text-white text-lg font-medium hover:text-sky-300 transition duration-300 ease-in-out p-2 rounded-md hover:bg-gray-700">Employees</a></li>
+            <li><a href="hr_attendance.html" class="text-white text-lg font-medium hover:text-sky-300 transition duration-300 ease-in-out p-2 rounded-md hover:bg-gray-700">Attendance</a></li>
+            <li><a href="hr_leaves.html" class="text-white text-lg font-medium hover:text-sky-300 transition duration-300 ease-in-out p-2 rounded-md hover:bg-gray-700">Leaves</a></li>
+            <li><a href="hr_departments.html" class="text-white text-lg font-medium hover:text-sky-300 transition duration-300 ease-in-out p-2 rounded-md hover:bg-gray-700">Departments</a></li>
+            <li><a href="hr_documents.html" class="text-white text-lg font-medium hover:text-sky-300 transition duration-300 ease-in-out p-2 rounded-md hover:bg-gray-700">Documents</a></li>
+            <li><a href="hr_reports.html" class="text-sky-300 text-lg font-medium transition duration-300 ease-in-out p-2 rounded-md bg-gray-700">Reports</a></li>
+        </ul>
+    </nav>
+
+    <!-- Main Content Area - HR Reports List (Cards) -->
+    <main class="flex-grow p-8 bg-gray-50">
+        <div class="max-w-7xl mx-auto">
+            <div class="flex justify-between items-center mb-8">
+                <h2 class="text-3xl font-extrabold text-gray-900 page-title">HR Reports</h2>
+                <a href="generate_report.html" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg shadow-md transition duration-300 ease-in-out flex items-center">
+                    <i class="fas fa-file-export mr-2"></i> Generate New Report
+                </a>
+            </div>
+
+            <!-- Report Cards Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Example Report Card 1 (Employee Headcount) -->
+                <div class="report-card card-blue">
+                    <h3 class="text-blue-900"><i class="fas fa-users mr-2"></i> Employee Headcount Report</h3>
+                    <p class="text-blue-800">**ID:** REP001</p>
+                    <p class="text-blue-800 text-sm mb-2">Provides a summary of total active employees by department and designation.</p>
+                    <p class="text-blue-800 text-sm">**Type:** Employee Analytics</p>
+                    <p class="text-blue-800 text-sm">**Last Generated:** 2025-07-20</p>
+                    <span class="info-badge bg-blue-200 text-blue-800">Monthly</span>
+                    <div class="flex justify-end mt-4 space-x-3">
+                        <a href="#" class="text-blue-700 hover:text-blue-900" title="View Report"><i class="fas fa-eye text-lg"></i></a>
+                        <a href="#" class="text-blue-700 hover:text-blue-900" title="Download Report"><i class="fas fa-download text-lg"></i></a>
+                        <a href="#" class="text-blue-700 hover:text-blue-900" title="Generate Now"><i class="fas fa-redo-alt text-lg"></i></a>
+                    </div>
+                </div>
+
+                <!-- Example Report Card 2 (Attendance Summary) -->
+                <div class="report-card card-green">
+                    <h3 class="text-green-900"><i class="fas fa-clock mr-2"></i> Monthly Attendance Summary</h3>
+                    <p class="text-green-800">**ID:** REP002</p>
+                    <p class="text-green-800 text-sm mb-2">Detailed overview of employee attendance, including present, absent, and leave days.</p>
+                    <p class="text-green-800 text-sm">**Type:** Attendance Report</p>
+                    <p class="text-green-800 text-sm">**Last Generated:** 2025-07-01</p>
+                    <span class="info-badge bg-green-200 text-green-800">Monthly</span>
+                    <div class="flex justify-end mt-4 space-x-3">
+                        <a href="#" class="text-green-700 hover:text-green-900" title="View Report"><i class="fas fa-eye text-lg"></i></a>
+                        <a href="#" class="text-green-700 hover:text-green-900" title="Download Report"><i class="fas fa-download text-lg"></i></a>
+                        <a href="#" class="text-green-700 hover:text-green-900" title="Generate Now"><i class="fas fa-redo-alt text-lg"></i></a>
+                    </div>
+                </div>
+
+                <!-- Example Report Card 3 (Leave Balance) -->
+                <div class="report-card card-yellow">
+                    <h3 class="text-yellow-900"><i class="fas fa-calendar-check mr-2"></i> Employee Leave Balance</h3>
+                    <p class="text-yellow-800">**ID:** REP003</p>
+                    <p class="text-yellow-800 text-sm mb-2">Shows current leave balances for all employees across different leave types.</p>
+                    <p class="text-yellow-800 text-sm">**Type:** Leave Management</p>
+                    <p class="text-yellow-800 text-sm">**Last Generated:** 2025-07-15</p>
+                    <span class="info-badge bg-yellow-200 text-yellow-800">Quarterly</span>
+                    <div class="flex justify-end mt-4 space-x-3">
+                        <a href="#" class="text-yellow-700 hover:text-yellow-900" title="View Report"><i class="fas fa-eye text-lg"></i></a>
+                        <a href="#" class="text-yellow-700 hover:text-yellow-900" title="Download Report"><i class="fas fa-download text-lg"></i></a>
+                        <a href="#" class="text-yellow-700 hover:text-yellow-900" title="Generate Now"><i class="fas fa-redo-alt text-lg"></i></a>
+                    </div>
+                </div>
+
+                <!-- More report cards can be added here dynamically -->
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer Section -->
+    <footer class="bg-gray-800 text-white p-4 text-center mt-auto rounded-t-lg">
+        <p class="text-sm">&copy; 2025 Wordlane Tech. All rights reserved.</p>
+    </footer>
+
+    <script>
+        const profileButton = document.getElementById('profileButton');
+        const profileDropdown = document.getElementById('profileDropdown');
+
+        // Toggle dropdown visibility
+        profileButton.addEventListener('click', (event) => {
+            event.stopPropagation(); // Prevent click from immediately closing it
+            profileDropdown.classList.toggle('show');
+        });
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', (event) => {
+            if (!profileDropdown.contains(event.target) && !profileButton.contains(event.target)) {
+                profileDropdown.classList.remove('show');
+            }
+        });
+
+        // Placeholder for future dynamic data fetching
+        document.addEventListener('DOMContentLoaded', () => {
+            // async function fetchHRReportsData() {
+            //     try {
+            //         const response = await fetch('/api/hr/reports'); // Your API endpoint for HR's report list
+            //         if (!response.ok) {
+            //             throw new Error(`HTTP error! status: ${response.status}`);
+            //         }
+            //         const reports = await response.json();
+            //
+            //         const reportsGrid = document.querySelector('.grid');
+            //         reportsGrid.innerHTML = ''; // Clear existing cards
+            //
+            //         reports.forEach(report => {
+            //             const cardColorClass = getReportCardColor(report.type); // Function to determine color based on type
+            //
+            //             const card = `
+            //                 <div class="report-card ${cardColorClass}">
+            //                     <h3 class="${cardColorClass.replace('-100', '-900').replace('-200', '-900')}"><i class="fas fa-chart-line mr-2"></i> ${report.name}</h3>
+            //                     <p class="${cardColorClass.replace('-100', '-800').replace('-200', '-800')}">**ID:** ${report.id}</p>
+            //                     <p class="${cardColorClass.replace('-100', '-800').replace('-200', '-800')} text-sm mb-2">${report.description}</p>
+            //                     <p class="${cardColorClass.replace('-100', '-800').replace('-200', '-800')} text-sm">**Type:** ${report.type}</p>
+            //                     <p class="${cardColorClass.replace('-100', '-800').replace('-200', '-800')} text-sm">**Last Generated:** ${report.lastGenerated}</p>
+            //                     <span class="info-badge bg-${cardColorClass.split('-')[1]}-200 text-${cardColorClass.split('-')[1]}-800">${report.frequency}</span>
+            //                     <div class="flex justify-end mt-4 space-x-3">
+            //                         <a href="#" class="text-${cardColorClass.split('-')[1]}-700 hover:text-${cardColorClass.split('-')[1]}-900" title="View Report"><i class="fas fa-eye text-lg"></i></a>
+            //                         <a href="#" class="text-${cardColorClass.split('-')[1]}-700 hover:text-${cardColorClass.split('-')[1]}-900" title="Download Report"><i class="fas fa-download text-lg"></i></a>
+            //                         <a href="#" class="text-${cardColorClass.split('-')[1]}-700 hover:text-${cardColorClass.split('-')[1]}-900" title="Generate Now"><i class="fas fa-redo-alt text-lg"></i></a>
+            //                     </div>
+            //                 </div>
+            //             `;
+            //             reportsGrid.insertAdjacentHTML('beforeend', card);
+            //         });
+            //
+            //     } catch (error) {
+            //         console.error('Error fetching HR reports data:', error);
+            //         // Display a user-friendly message on the page
+            //     }
+            // }
+            //
+            // // Helper function to get card color based on report type (example)
+            // function getReportCardColor(type) {
+            //     switch (type.toLowerCase()) {
+            //         case 'employee analytics':
+            //             return 'card-blue';
+            //         case 'attendance report':
+            //             return 'card-green';
+            //         case 'leave management':
+            //             return 'card-yellow';
+            //         default:
+            //             return 'card-purple'; // Default color for other types
+            //     }
+            // }
+            //
+            // fetchHRReportsData();
+        });
+    </script>
+</body>
+</html>

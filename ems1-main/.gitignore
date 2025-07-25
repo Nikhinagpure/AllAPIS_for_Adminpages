@@ -1,0 +1,9 @@
+# Ignore backend and frontend node_modules
+ems-backend/node_modules/
+ems-frontend/node_modules/
+
+# Ignore environment variables
+.env
+
+# Ignore system files
+.DS_Store
